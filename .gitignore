@@ -1,6 +1,7 @@
 .venv/
 .idea/
-.codex/
+.codex
+CODEX_PROMPT_thesis_sparse_recovery_final.md
 
 __pycache__/
 *.pyc
