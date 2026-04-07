@@ -1,25 +1,28 @@
-# 算法边界说明
+# Algorithm Boundary Notes
 
-## 文献复现
+## Direct Baselines
 
-- `OMP`：作为经典基线实现，承担方法正确性与噪声下基础性能对照。
-- `gOMP`：依据 [7][11] 实现多原子选择基线，作为本文改进框架的直接母体。
+- `OMP`: retained as the classic single-atom greedy baseline.
+- `gOMP`: retained as the group-selection baseline and the direct parent family for `Improved-gOMP`.
 
-## 文献启发下改造
+## Literature-Inspired Extensions
 
-- `improved_gomp` 的自适应候选筛选受 [15] 自适应部分选择思路启发，但筛选池大小与重排序规则属于本文工程化设计。
-- 噪声感知停止准则受 [3][4][9][10] 的问题意识启发，用于增强 noisy measurement 下的停止合理性，不宣称直接复现任何单篇文献。
-- `rmp.py` 对 [14] 仅做探索性实现，保留接口和对照位置，但不作为正式论文主对照。
+- The adaptive screening logic in `improved_gomp` is inspired by adaptive partial-selection ideas, but the pool sizing, reranking, and rescue rules in this repository are engineering choices rather than a line-by-line reproduction of any one paper.
+- The noise-aware stopping behavior is motivated by noisy sparse recovery literature, but the concrete stop policy here is repository-specific.
+- `rmp.py` is included as an exploratory implementation for comparison and code organization purposes, not as a primary benchmark baseline.
 
-## 本文新增工程设计
+## Repository-Specific Engineering Additions
 
-- 增量 Gram 缓存与稳定 fallback 求解。
-- 统一的实验 `raw/aggregated/logs` 输出结构。
-- 消融实验与参数敏感性实验脚本。
-- 图表索引、交付清单、来源映射与实验协议等工程文档。
+- incremental Gram and Cholesky-based support solvers
+- aligned support-budget semantics across `OMP`, `gOMP`, and `Improved-gOMP`
+- experiment output organization under `raw`, `aggregated`, and `logs`
+- ablation and parameter-sensitivity runners
+- supporting notes for traceability, experiment protocol, and design boundaries
 
-## 明确不采用的路线
+## Deliberately Excluded Directions
 
-- 不采用 [13] 的预处理 gOMP 路线，原因是本文聚焦轻量筛选与增量求解的工程性能优化，而非前置矩阵变换。
-- 不采用 [8] 的多路径扩展路线，原因是复杂度上升明显，不符合本文“恢复性能与效率平衡”的主目标。
-- 不扩展到 [2] 的块稀疏主线，避免研究边界漂移。
+- preconditioned `gOMP` variants are not part of the main implementation path
+- multi-path pursuit variants are not included in the default benchmark flow
+- block-sparse extensions are outside the current repository scope
+
+The goal of these limits is to keep the project centered on a compact greedy sparse-recovery benchmark instead of expanding into multiple unrelated pursuit families.

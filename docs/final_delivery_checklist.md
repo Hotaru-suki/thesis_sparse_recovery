@@ -1,15 +1,17 @@
-# 最终交付检查清单
+# Repository Checklist
 
-- [x] OMP 可用
-- [x] gOMP 可用
-- [x] improved_gomp 可用
-- [x] rmp.py 已提供探索性实现并在文档说明边界
-- [x] 稀疏度实验脚本可跑
-- [x] SNR 实验脚本可跑
-- [x] 运行时间实验脚本可跑
-- [x] 测量矩阵实验脚本可跑
-- [x] 消融实验脚本可跑
-- [x] 参数敏感性实验脚本可跑
-- [x] 原始 trial 数据与聚合数据分离
-- [x] README、来源映射、边界说明、实验协议、图表索引齐备
-- [x] 主入口支持 `--all` 与 `--exp`
+- [x] `OMP` implementation available
+- [x] `gOMP` implementation available
+- [x] `improved_gomp` implementation available
+- [x] `rmp.py` included as an exploratory implementation with documented scope
+- [x] sparsity sweep runnable
+- [x] SNR sweep runnable
+- [x] runtime sweep runnable
+- [x] matrix-type sweep runnable
+- [x] ablation sweep runnable
+- [x] parameter-sensitivity sweep runnable
+- [x] trial-level and aggregated outputs stored separately
+- [x] `README`, traceability notes, boundary notes, and experiment protocol included
+- [x] CLI supports `--all` and `--exp`
+- [x] `OMP`, `gOMP`, and `Improved-gOMP` tests passing
+- [x] `Improved-gOMP` design notes included

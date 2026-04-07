@@ -1,33 +1,35 @@
-# 实验协议
+# Experiment Protocol
 
-## 总体设置
+## Default Setup
 
-- Python 主栈：`numpy`、`scipy`、`pandas`、`matplotlib`、`tqdm`
-- 默认信号维度：`n=256`
-- 默认测量维度：`m=96`
-- 默认稀疏度：`k=16`
-- 默认矩阵：`gaussian`
-- 默认系数模式：`gaussian`
+- Core stack: `numpy`, `scipy`, `pandas`, `matplotlib`, `tqdm`
+- Default signal dimension: `n = 256`
+- Default measurement dimension: `m = 96`
+- Default sparsity: `k = 16`
+- Default matrix type: `gaussian`
+- Default coefficient mode: `gaussian`
+- Default `gOMP` group size: `3`
+- Default `Improved-gOMP` group size: `2`
 
-## 实验列表
+## Experiment Suite
 
-- 稀疏度扫描：考察 `k` 对恢复率、误差和时间的影响
-- SNR 扫描：考察噪声水平变化下的稳定性
-- 运行时间实验：考察信号维度增长对运行时间的影响
-- 压缩率实验：考察测量维度比例 `m/n` 变化下的恢复性能和时间
-- 测量矩阵实验：比较 `gaussian`、`bernoulli`、`partial_dct`
-- 系数分布实验：比较 `gaussian`、`rademacher`、`uniform`
-- 消融实验：拆分 adaptive screening、incremental solver、noise-aware stop
-- 参数敏感性实验：考察 `screening_ratio` 与 `group_size`
+- Sparsity sweep: effect of `k` on recovery quality and runtime
+- SNR sweep: robustness under changing noise levels
+- Runtime sweep: scaling behavior as problem size grows
+- Compression sweep: recovery quality under different `m / n`
+- Matrix-type sweep: `gaussian`, `bernoulli`, `partial_dct`
+- Coefficient-mode sweep: `gaussian`, `rademacher`, `uniform`
+- Ablation sweep: impact of screening, solver, and stopping modules
+- Parameter sensitivity: `screening_ratio` and group size
 
-## 输出规则
+## Output Layout
 
-- 原始 trial 级数据保存到 `results/raw/`
-- 聚合结果保存到 `results/aggregated/`
-- 每次运行的配置快照和时间戳保存到 `results/logs/`
-- 图表保存到 `figures/`
+- Trial-level outputs: `results/raw/`
+- Aggregated summaries: `results/aggregated/`
+- Run metadata and configuration snapshots: `results/logs/`
+- Generated figures: `figures/`
 
-## 指标
+## Reported Metrics
 
 - `exact_support_recovery`
 - `support_recall`
@@ -45,3 +47,6 @@
 - `solver_fallback_count`
 - `duplicate_candidate_hits`
 - `max_support_condition`
+- `support_size`
+- `rescue_attempted`
+- `rescue_accepted`

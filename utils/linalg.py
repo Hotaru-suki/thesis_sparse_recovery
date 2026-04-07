@@ -51,6 +51,15 @@ class IncrementalGramSolver:
         self.gram = np.zeros((0, 0), dtype=float)
         self.rhs = np.zeros(0, dtype=float)
 
+    def snapshot(self) -> tuple[list[int], np.ndarray, np.ndarray]:
+        return self.support.copy(), self.gram.copy(), self.rhs.copy()
+
+    def restore(self, state: tuple[list[int], np.ndarray, np.ndarray]) -> None:
+        support, gram, rhs = state
+        self.support = support.copy()
+        self.gram = gram.copy()
+        self.rhs = rhs.copy()
+
     def extend(self, new_indices: list[int]) -> None:
         for idx in new_indices:
             idx = int(idx)
@@ -73,6 +82,62 @@ class IncrementalGramSolver:
 
     def solve(self) -> tuple[np.ndarray, str]:
         return stable_solve_gram(self.gram, self.rhs, ridge=self.ridge)
+
+
+@dataclass
+class IncrementalCholeskySolver:
+    """Maintain Gram-system caches with a Cholesky-first solve path."""
+
+    Phi: np.ndarray
+    y: np.ndarray
+    ridge: float = 1e-10
+
+    def __post_init__(self) -> None:
+        self.support: list[int] = []
+        self.gram = np.zeros((0, 0), dtype=float)
+        self.rhs = np.zeros(0, dtype=float)
+
+    def snapshot(self) -> tuple[list[int], np.ndarray, np.ndarray]:
+        return self.support.copy(), self.gram.copy(), self.rhs.copy()
+
+    def restore(self, state: tuple[list[int], np.ndarray, np.ndarray]) -> None:
+        support, gram, rhs = state
+        self.support = support.copy()
+        self.gram = gram.copy()
+        self.rhs = rhs.copy()
+
+    def extend(self, new_indices: list[int]) -> None:
+        for idx in new_indices:
+            idx = int(idx)
+            if idx in self.support:
+                continue
+            col = self.Phi[:, idx]
+            if not self.support:
+                self.gram = np.array([[float(col @ col)]], dtype=float)
+                self.rhs = np.array([float(col @ self.y)], dtype=float)
+            else:
+                cross = self.Phi[:, self.support].T @ col
+                gram_new = np.zeros((len(self.support) + 1, len(self.support) + 1), dtype=float)
+                gram_new[:-1, :-1] = self.gram
+                gram_new[:-1, -1] = cross
+                gram_new[-1, :-1] = cross
+                gram_new[-1, -1] = float(col @ col)
+                self.gram = gram_new
+                self.rhs = np.concatenate([self.rhs, [float(col @ self.y)]])
+            self.support.append(idx)
+
+    def solve(self) -> tuple[np.ndarray, str]:
+        if self.gram.size == 0:
+            return np.zeros(0, dtype=float), "empty_support"
+        system = self.gram.copy()
+        system.flat[:: system.shape[0] + 1] += self.ridge
+        try:
+            chol = np.linalg.cholesky(system)
+            z = np.linalg.solve(chol, self.rhs)
+            coef = np.linalg.solve(chol.T, z)
+            return coef, "cholesky_solve"
+        except np.linalg.LinAlgError:
+            return stable_solve_gram(self.gram, self.rhs, ridge=self.ridge)
 
 
 def topk_indices(values: np.ndarray, k: int) -> np.ndarray:

@@ -55,11 +55,11 @@ def omp(
         residual_history.append(residual_norm)
         support_history.append(sorted(support.copy()))
 
-        if residual_norm <= tol:
-            stop_reason = "residual_tol"
-            break
         if k is not None and len(support) >= k:
             stop_reason = "target_sparsity_reached"
+            break
+        if residual_norm <= tol:
+            stop_reason = "residual_tol"
             break
 
     info = {

@@ -43,7 +43,13 @@ def gomp(
         corr = np.abs(Phi.T @ residual)
         if support:
             corr[np.asarray(support, dtype=int)] = -np.inf
-        raw_chosen = [int(idx) for idx in topk_indices(corr, min(group_size, n - len(support)))]
+        remaining_support_budget = n - len(support)
+        if k is not None:
+            remaining_support_budget = min(remaining_support_budget, max(k - len(support), 0))
+        if remaining_support_budget <= 0:
+            stop_reason = "target_sparsity_reached" if k is not None and len(support) >= k else "support_exhausted"
+            break
+        raw_chosen = [int(idx) for idx in topk_indices(corr, min(group_size, remaining_support_budget))]
         duplicate_candidate_hits += sum(1 for idx in raw_chosen if idx in support)
         chosen = [idx for idx in raw_chosen if idx not in support]
         if not chosen:
@@ -63,11 +69,11 @@ def gomp(
         residual_history.append(residual_norm)
         support_history.append(sorted(support.copy()))
 
-        if residual_norm <= tol:
-            stop_reason = "residual_tol"
-            break
         if k is not None and len(support) >= k:
             stop_reason = "target_sparsity_reached"
+            break
+        if residual_norm <= tol:
+            stop_reason = "residual_tol"
             break
 
     info = {

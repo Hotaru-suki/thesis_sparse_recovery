@@ -2,6 +2,7 @@
 .idea/
 .codex
 CODEX_PROMPT_thesis_sparse_recovery_final.md
+CODEX_PROMPT*.md
 
 __pycache__/
 *.pyc
@@ -10,6 +11,8 @@ __pycache__/
 
 .pytest_cache/
 .mypy_cache/
+.DS_Store
+Thumbs.db
 
 results/logs/*.json
 

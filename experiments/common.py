@@ -26,6 +26,25 @@ from utils.plotting import plot_metric
 AlgorithmFn = Callable[[np.ndarray, np.ndarray, int, float | None, dict], tuple[np.ndarray, np.ndarray, dict]]
 
 
+def build_improved_gomp_kwargs(params: dict, noise_sigma: float | None) -> dict:
+    return {
+        "group_size": params.get("improved_group_size", params.get("group_size", 2)),
+        "tol": params.get("tol"),
+        "max_iter": params.get("max_iter"),
+        "screening_ratio": params.get("improved_screening_ratio", params.get("screening_ratio", 3.0)),
+        "min_group_size": params.get("improved_min_group_size", params.get("min_group_size", 1)),
+        "use_noise_aware_stop": params.get("use_noise_aware_stop", True),
+        "use_incremental_solver": params.get("use_incremental_solver", True),
+        "noise_sigma": noise_sigma,
+        "min_residual_drop": params.get("improved_min_residual_drop", params.get("min_residual_drop", 1e-4)),
+        "use_tail_refinement": params.get("use_tail_refinement", False),
+        "use_gain_reranking": params.get("use_gain_reranking", False),
+        "use_forward_backward": params.get("use_forward_backward", False),
+        "use_two_phase_tail": params.get("use_two_phase_tail", False),
+        "use_cholesky_solver": params.get("use_cholesky_solver", True),
+    }
+
+
 def _run_omp(Phi: np.ndarray, y: np.ndarray, k: int, noise_sigma: float | None, params: dict) -> tuple[np.ndarray, np.ndarray, dict]:
     return omp(Phi=Phi, y=y, k=k, tol=params.get("tol"), max_iter=params.get("max_iter"))
 
@@ -44,20 +63,7 @@ def _run_gomp(Phi: np.ndarray, y: np.ndarray, k: int,
 
 
 def _run_improved(Phi: np.ndarray, y: np.ndarray, k: int, noise_sigma: float | None, params: dict) -> tuple[np.ndarray, np.ndarray, dict]:
-    return improved_gomp(
-        Phi=Phi,
-        y=y,
-        k=k,
-        group_size=params.get("group_size", 2),
-        tol=params.get("tol"),
-        max_iter=params.get("max_iter"),
-        screening_ratio=params.get("screening_ratio", 3.0),
-        min_group_size=params.get("min_group_size", 1),
-        use_noise_aware_stop=params.get("use_noise_aware_stop", True),
-        use_incremental_solver=params.get("use_incremental_solver", True),
-        noise_sigma=noise_sigma,
-        min_residual_drop=params.get("min_residual_drop", 1e-4),
-    )
+    return improved_gomp(Phi=Phi, y=y, k=k, **build_improved_gomp_kwargs(params, noise_sigma))
 
 
 def _run_rmp(Phi: np.ndarray, y: np.ndarray, k: int, noise_sigma: float | None, params: dict) -> tuple[np.ndarray, np.ndarray, dict]:
@@ -138,6 +144,7 @@ def run_trials(
                     "exact_support_recovery": exact_support_recovery(support_true, support_hat),
                     "runtime_sec": info["runtime_sec"],
                     "iterations": info["iterations"],
+                    "support_size": float(len(support_hat)),
                     "final_residual_norm": final_residual_norm(Phi, x_hat, y),
                     "stop_reason": info["stop_reason"],
                     "false_positive_count": false_positive_count(support_true, support_hat),
@@ -149,6 +156,13 @@ def run_trials(
                     "solver_fallback_count": info.get("solver_fallback_count", 0),
                     "duplicate_candidate_hits": info.get("duplicate_candidate_hits", 0),
                     "max_support_condition": info.get("max_support_condition", 0.0),
+                    "rescue_attempted": float(bool(info.get("rescue_attempted", False))),
+                    "rescue_accepted": float(bool(info.get("rescue_accepted", False))),
+                    "used_tail_refinement": float(bool(info.get("used_tail_refinement", False))),
+                    "used_gain_reranking": float(bool(info.get("used_gain_reranking", False))),
+                    "used_forward_backward": float(bool(info.get("used_forward_backward", False))),
+                    "used_two_phase_tail": float(bool(info.get("used_two_phase_tail", False))),
+                    "used_cholesky_solver": float(bool(info.get("used_cholesky_solver", False))),
                 }
             )
     return pd.DataFrame(rows)
@@ -163,6 +177,7 @@ def summarize(df: pd.DataFrame, variable_name: str) -> pd.DataFrame:
         "exact_support_recovery",
         "runtime_sec",
         "iterations",
+        "support_size",
         "final_residual_norm",
         "false_positive_count",
         "false_negative_count",
@@ -171,6 +186,13 @@ def summarize(df: pd.DataFrame, variable_name: str) -> pd.DataFrame:
         "solver_fallback_count",
         "duplicate_candidate_hits",
         "max_support_condition",
+        "rescue_attempted",
+        "rescue_accepted",
+        "used_tail_refinement",
+        "used_gain_reranking",
+        "used_forward_backward",
+        "used_two_phase_tail",
+        "used_cholesky_solver",
     ]
     return df.groupby([variable_name, "algorithm"], as_index=False)[metric_cols].mean(numeric_only=True)
 
