@@ -6,7 +6,16 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from utils.linalg import IncrementalCholeskySolver, IncrementalGramSolver, estimate_condition_number, solve_least_squares, topk_indices
+from utils.linalg import (
+    IncrementalCholeskySolver,
+    IncrementalGramSolver,
+    PhaseTimer,
+    estimate_condition_number,
+    init_phase_timing,
+    solve_least_squares,
+    topk_indices,
+)
+from utils.memory import build_memory_breakdown
 
 
 SolverType = IncrementalGramSolver | IncrementalCholeskySolver
@@ -14,6 +23,8 @@ SolverType = IncrementalGramSolver | IncrementalCholeskySolver
 
 @dataclass(frozen=True)
 class ImprovedGompOptions:
+    implementation: str = "optimized"
+    profile_level: str = "full"
     group_size: int = 2
     k: int | None = None
     tol: float | None = None
@@ -93,13 +104,16 @@ def _record_iteration(
     residual_norm: float,
     pool_size: int,
     chosen_size: int,
+    profile_level: str,
 ) -> None:
     state.residual_history.append(residual_norm)
-    state.support_history.append(sorted(support.copy()))
+    if profile_level != "light":
+        state.support_history.append(sorted(support.copy()))
     state.support_size_history.append(len(support))
-    state.candidate_size_history.append(pool_size)
-    state.group_size_history.append(chosen_size)
-    state.support_condition_history.append(estimate_condition_number(Phi[:, support]))
+    if profile_level != "light":
+        state.candidate_size_history.append(pool_size)
+        state.group_size_history.append(chosen_size)
+        state.support_condition_history.append(estimate_condition_number(Phi[:, support]))
 
 
 def _sync_state_after_support_update(
@@ -517,6 +531,7 @@ def _accept_rescue(
     residual: np.ndarray,
     residual_norm: float,
     support_gain: int,
+    profile_level: str,
 ) -> None:
     _sync_state_after_support_update(
         state=state,
@@ -525,10 +540,13 @@ def _accept_rescue(
         residual=residual,
     )
     state.residual_history[-1] = residual_norm
-    state.support_history[-1] = sorted(support.copy())
+    if state.support_history:
+        state.support_history[-1] = sorted(support.copy())
     state.support_size_history[-1] = len(support)
-    state.group_size_history[-1] += support_gain
-    state.support_condition_history[-1] = estimate_condition_number(Phi[:, support])
+    if profile_level != "light" and state.group_size_history:
+        state.group_size_history[-1] += support_gain
+    if profile_level != "light" and state.support_condition_history:
+        state.support_condition_history[-1] = estimate_condition_number(Phi[:, support])
     state.rescue_accepted = True
     state.soft_stop_count = 0
 
@@ -538,9 +556,11 @@ def _finalize_info(
     state: ImprovedGompState,
     options: ImprovedGompOptions,
     runtime_sec: float,
+    phase_timings: dict[str, float],
+    memory_breakdown: dict[str, int],
 ) -> dict:
     return {
-        "iterations": len(state.support_history),
+        "iterations": len(state.support_size_history),
         "runtime_sec": runtime_sec,
         "residual_history": state.residual_history,
         "support_history": state.support_history,
@@ -551,6 +571,7 @@ def _finalize_info(
         "duplicate_candidate_hits": state.duplicate_candidate_hits,
         "solver_time_history": state.solver_time_history,
         "used_incremental_solver": options.use_incremental_solver,
+        "profile_level": options.profile_level,
         "candidate_size_history": state.candidate_size_history,
         "group_size_history": state.group_size_history,
         "screening_pool_size_avg": float(np.mean(state.candidate_size_history)) if state.candidate_size_history else 0.0,
@@ -564,6 +585,10 @@ def _finalize_info(
         "used_forward_backward": options.use_forward_backward,
         "used_two_phase_tail": options.use_two_phase_tail,
         "used_cholesky_solver": options.use_cholesky_solver,
+        "implementation": options.implementation,
+        "timing_breakdown_sec": dict(phase_timings),
+        "memory_breakdown_bytes": dict(memory_breakdown),
+        "peak_working_set_bytes": int(memory_breakdown.get("peak_working_set_bytes", 0)),
     }
 
 
@@ -585,6 +610,8 @@ def improved_gomp(
     use_forward_backward: bool = False,
     use_two_phase_tail: bool = False,
     use_cholesky_solver: bool = True,
+    implementation: str = "optimized",
+    profile_level: str = "full",
     return_info: bool = True,
 ) -> tuple[np.ndarray, np.ndarray, dict]:
     """
@@ -599,6 +626,8 @@ def improved_gomp(
         k=k,
         tol=tol,
         max_iter=max_iter,
+        implementation=implementation,
+        profile_level=profile_level,
         screening_ratio=screening_ratio,
         min_group_size=min_group_size,
         use_noise_aware_stop=use_noise_aware_stop,
@@ -621,13 +650,15 @@ def improved_gomp(
 
     state = _init_state(y=y, n=n)
     solver = _build_solver(Phi=Phi, y=y, options=options)
+    phase_timings = init_phase_timing()
     t0 = time.perf_counter()
 
     for iteration in range(1, max_iter + 1):
         residual_norm = float(np.linalg.norm(state.residual))
-        correlations = np.abs(Phi.T @ state.residual)
-        if state.support:
-            correlations[np.asarray(state.support, dtype=int)] = -np.inf
+        with PhaseTimer(phase_timings, "correlation"):
+            correlations = np.abs(Phi.T @ state.residual)
+            if state.support:
+                correlations[np.asarray(state.support, dtype=int)] = -np.inf
 
         remaining = n - len(state.support)
         remaining_target = None if options.k is None else max(options.k - len(state.support), 0)
@@ -650,57 +681,63 @@ def improved_gomp(
             state.stop_reason = "target_sparsity_reached" if remaining_target == 0 else "support_exhausted"
             break
 
-        pool_size = _adaptive_pool_size(
-            correlations=np.where(np.isfinite(correlations), correlations, 0.0),
-            residual_norm=residual_norm,
-            previous_residual_norm=state.previous_residual_norm,
-            screening_ratio=options.screening_ratio,
-            base_group_size=active_group_size,
-            remaining=remaining,
-            iteration=iteration,
-        )
-        candidates = topk_indices(correlations, pool_size)
-        raw_chosen = _select_candidates(
-            Phi=Phi,
-            y=y,
-            residual=state.residual,
-            support=state.support,
-            candidates=candidates,
-            active_group_size=active_group_size,
-            use_tail_refinement=options.use_tail_refinement,
-            remaining_target=remaining_target,
-            use_gain_reranking=options.use_gain_reranking,
-        )
+        with PhaseTimer(phase_timings, "selection"):
+            pool_size = _adaptive_pool_size(
+                correlations=np.where(np.isfinite(correlations), correlations, 0.0),
+                residual_norm=residual_norm,
+                previous_residual_norm=state.previous_residual_norm,
+                screening_ratio=options.screening_ratio,
+                base_group_size=active_group_size,
+                remaining=remaining,
+                iteration=iteration,
+            )
+            if options.implementation == "optimized":
+                pool_cap = min(remaining, max(active_group_size + 2, 3 * active_group_size))
+                pool_size = min(pool_size, pool_cap)
+            candidates = topk_indices(correlations, pool_size)
+            raw_chosen = _select_candidates(
+                Phi=Phi,
+                y=y,
+                residual=state.residual,
+                support=state.support,
+                candidates=candidates,
+                active_group_size=active_group_size,
+                use_tail_refinement=options.use_tail_refinement,
+                remaining_target=remaining_target,
+                use_gain_reranking=options.use_gain_reranking,
+            )
         state.duplicate_candidate_hits += sum(1 for idx in raw_chosen if idx in state.support)
         chosen = [idx for idx in raw_chosen if idx not in state.support]
         if not chosen:
             state.stop_reason = "empty_candidate_set"
             break
 
-        if solver is not None:
-            solver.extend(chosen)
-            coef, current_support, solver_name = _solve_support(
-                Phi=Phi,
-                y=y,
-                support=solver.support,
-                solver=solver,
-                solver_time_history=state.solver_time_history,
-            )
-        else:
-            current_support = state.support + chosen
-            coef, current_support, solver_name = _solve_support(
-                Phi=Phi,
-                y=y,
-                support=current_support,
-                solver=None,
-                solver_time_history=state.solver_time_history,
-            )
+        with PhaseTimer(phase_timings, "solve"):
+            if solver is not None:
+                solver.extend(chosen)
+                coef, current_support, solver_name = _solve_support(
+                    Phi=Phi,
+                    y=y,
+                    support=solver.support,
+                    solver=solver,
+                    solver_time_history=state.solver_time_history,
+                )
+            else:
+                current_support = state.support + chosen
+                coef, current_support, solver_name = _solve_support(
+                    Phi=Phi,
+                    y=y,
+                    support=current_support,
+                    solver=None,
+                    solver_time_history=state.solver_time_history,
+                )
         _note_solver_status(state, solver_name)
 
-        x_hat = np.zeros(n, dtype=float)
-        x_hat[np.asarray(current_support, dtype=int)] = coef
-        residual = y - Phi @ x_hat
-        new_residual_norm = float(np.linalg.norm(residual))
+        with PhaseTimer(phase_timings, "residual_update"):
+            x_hat = np.zeros(n, dtype=float)
+            x_hat[np.asarray(current_support, dtype=int)] = coef
+            residual = y - Phi @ x_hat
+            new_residual_norm = float(np.linalg.norm(residual))
         _sync_state_after_support_update(
             state=state,
             support=current_support,
@@ -708,16 +745,17 @@ def improved_gomp(
             residual=residual,
         )
 
-        solver, new_residual_norm = _maybe_apply_forward_backward(
-            Phi=Phi,
-            y=y,
-            state=state,
-            solver=solver,
-            options=options,
-            remaining_target=remaining_target,
-            candidates=candidates,
-            new_residual_norm=new_residual_norm,
-        )
+        with PhaseTimer(phase_timings, "support_refinement"):
+            solver, new_residual_norm = _maybe_apply_forward_backward(
+                Phi=Phi,
+                y=y,
+                state=state,
+                solver=solver,
+                options=options,
+                remaining_target=remaining_target,
+                candidates=candidates,
+                new_residual_norm=new_residual_norm,
+            )
         drop_ratio = (state.previous_residual_norm - new_residual_norm) / max(state.previous_residual_norm, 1e-12)
         _record_iteration(
             state=state,
@@ -726,9 +764,11 @@ def improved_gomp(
             residual_norm=new_residual_norm,
             pool_size=pool_size,
             chosen_size=len(chosen),
+            profile_level=options.profile_level,
         )
 
-        if _should_attempt_rescue(
+        allow_rescue = options.implementation == "baseline" or iteration >= 3
+        if allow_rescue and _should_attempt_rescue(
             iteration=iteration,
             k=options.k,
             support_size=len(state.support),
@@ -740,23 +780,25 @@ def improved_gomp(
             rescue_attempted=state.rescue_attempted,
         ):
             state.rescue_attempted = True
-            rescued_support, rescued_x_hat, rescued_residual, rescued_residual_norm, rescue_solver_name = _try_rescue_step(
-                Phi=Phi,
-                y=y,
-                residual=state.residual,
-                support=state.support,
-                residual_norm=new_residual_norm,
-                group_size=options.group_size,
-                screening_ratio=options.screening_ratio,
-                min_group_size=options.min_group_size,
-                k=options.k,
-                solver=solver,
-                solver_time_history=state.solver_time_history,
-            )
+            with PhaseTimer(phase_timings, "support_refinement"):
+                rescued_support, rescued_x_hat, rescued_residual, rescued_residual_norm, rescue_solver_name = _try_rescue_step(
+                    Phi=Phi,
+                    y=y,
+                    residual=state.residual,
+                    support=state.support,
+                    residual_norm=new_residual_norm,
+                    group_size=options.group_size,
+                    screening_ratio=options.screening_ratio,
+                    min_group_size=options.min_group_size,
+                    k=options.k,
+                    solver=solver,
+                    solver_time_history=state.solver_time_history,
+                )
             _note_solver_status(state, rescue_solver_name)
             rescue_gain = (new_residual_norm - rescued_residual_norm) / max(new_residual_norm, 1e-12)
             support_gain = len(rescued_support) - len(state.support)
-            if support_gain > 0 and rescue_gain >= 2e-3:
+            rescue_threshold = 4e-3 if options.implementation == "optimized" else 2e-3
+            if support_gain > 0 and rescue_gain >= rescue_threshold:
                 if solver is not None:
                     solver.extend([idx for idx in rescued_support if idx not in solver.support])
                 _accept_rescue(
@@ -767,6 +809,7 @@ def improved_gomp(
                     residual=rescued_residual,
                     residual_norm=rescued_residual_norm,
                     support_gain=support_gain,
+                    profile_level=options.profile_level,
                 )
                 new_residual_norm = rescued_residual_norm
 
@@ -787,21 +830,22 @@ def improved_gomp(
             state.soft_stop_count = state.soft_stop_count + 1 if low_recent_gain and low_previous_gain else 0
             if state.soft_stop_count >= 2:
                 can_rescue = not state.rescue_attempted and (options.k is None or len(state.support) < options.k)
-                if can_rescue:
+                if can_rescue and allow_rescue:
                     state.rescue_attempted = True
-                    rescued_support, rescued_x_hat, rescued_residual, rescued_residual_norm, rescue_solver_name = _try_rescue_step(
-                        Phi=Phi,
-                        y=y,
-                        residual=state.residual,
-                        support=state.support,
-                        residual_norm=new_residual_norm,
-                        group_size=options.group_size,
-                        screening_ratio=options.screening_ratio,
-                        min_group_size=options.min_group_size,
-                        k=options.k,
-                        solver=solver,
-                        solver_time_history=state.solver_time_history,
-                    )
+                    with PhaseTimer(phase_timings, "support_refinement"):
+                        rescued_support, rescued_x_hat, rescued_residual, rescued_residual_norm, rescue_solver_name = _try_rescue_step(
+                            Phi=Phi,
+                            y=y,
+                            residual=state.residual,
+                            support=state.support,
+                            residual_norm=new_residual_norm,
+                            group_size=options.group_size,
+                            screening_ratio=options.screening_ratio,
+                            min_group_size=options.min_group_size,
+                            k=options.k,
+                            solver=solver,
+                            solver_time_history=state.solver_time_history,
+                        )
                     _note_solver_status(state, rescue_solver_name)
                     rescue_gain = (new_residual_norm - rescued_residual_norm) / max(new_residual_norm, 1e-12)
                     if rescue_gain > max(5.0 * options.min_residual_drop, 1e-3):
@@ -815,6 +859,7 @@ def improved_gomp(
                             residual=rescued_residual,
                             residual_norm=rescued_residual_norm,
                             support_gain=len(rescued_support) - len(current_support),
+                            profile_level=options.profile_level,
                         )
                     else:
                         state.stop_reason = "small_residual_drop"
@@ -824,5 +869,28 @@ def improved_gomp(
                     break
         state.previous_residual_norm = new_residual_norm
 
-    info = _finalize_info(state=state, options=options, runtime_sec=time.perf_counter() - t0)
+    if options.profile_level == "light" and state.support and not state.support_history:
+        state.support_history.append(sorted(state.support.copy()))
+    if state.support and not state.support_condition_history:
+        state.support_condition_history = [estimate_condition_number(Phi[:, state.support])]
+    solver_gram = solver.gram if solver is not None else None
+    solver_rhs = solver.rhs if solver is not None else None
+    info = _finalize_info(
+        state=state,
+        options=options,
+        runtime_sec=time.perf_counter() - t0,
+        phase_timings=phase_timings,
+        memory_breakdown=build_memory_breakdown(
+            residual=state.residual,
+            x_hat=state.x_hat,
+            solver_gram=solver_gram,
+            solver_rhs=solver_rhs,
+            support_history=state.support_history,
+            residual_history=state.residual_history,
+            support_size_history=state.support_size_history,
+            candidate_size_history=state.candidate_size_history,
+            group_size_history=state.group_size_history,
+            support_condition_history=state.support_condition_history,
+        ),
+    )
     return state.x_hat, np.asarray(sorted(state.support), dtype=int), info if return_info else {}

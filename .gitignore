@@ -15,5 +15,6 @@ __pycache__/
 Thumbs.db
 
 results/logs/*.json
+tmp_*/
 
 notebooks/.ipynb_checkpoints/

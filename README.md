@@ -1,13 +1,14 @@
 # Sparse Recovery Greedy Algorithms
 
-This repository contains a compact experimental framework for sparse signal recovery with greedy pursuit methods. It focuses on reproducible comparisons between `OMP`, `gOMP`, an engineering-oriented `Improved-gOMP`, and an exploratory `RMP` implementation.
+This repository contains a compact experimental framework for sparse signal recovery with greedy pursuit methods. It focuses on reproducible comparisons between `OMP`, `gOMP`, `Improved-gOMP`, and an exploratory `RMP` implementation, with explicit baseline-vs-optimized implementation benchmarking.
 
 The project is organized as a benchmark-style codebase rather than a general-purpose library. It includes algorithm implementations, experiment runners, aggregated result exports, generated figures, and supporting notes that explain design choices and experiment boundaries.
 
 ## Highlights
 
-- Baseline implementations for `OMP` and `gOMP`
-- An `Improved-gOMP` variant with modular selection, stopping, and solver strategies
+- Explicit `baseline` and `optimized` implementations for all benchmarked algorithms
+- Runtime-breakdown exports for correlation, selection, solve, residual update, and support refinement
+- Speedup summaries that compare baseline and optimized implementations per algorithm
 - Sweep scripts for sparsity, SNR, runtime, compression ratio, matrix type, coefficient mode, ablation, and parameter sensitivity
 - Saved outputs under `results/raw`, `results/aggregated`, and `figures`
 - Unit tests for algorithm behavior and solver correctness
@@ -80,21 +81,20 @@ Optional overrides:
 python main.py --exp snr --seed 20260408 --trials 10 --outdir .
 ```
 
-## Current Positioning of `Improved-gOMP`
+## Current Positioning
 
-`Improved-gOMP` is designed as a conservative variant of `gOMP`. In the current result set it does not uniformly outperform `OMP` or `gOMP`, and it should not be presented as a universally superior method. Its stronger behavior is concentrated in support precision and false-positive suppression under selected medium-to-high quality measurement regimes.
+The repository is organized around a runtime-first thesis narrative:
 
-The public-facing takeaway is therefore:
-
-- `OMP` remains a strong accuracy baseline
-- `gOMP` remains the faster group-selection baseline
-- `Improved-gOMP` is a tradeoff-oriented variant with more modular recovery logic and better support precision in selected regimes
+- each experimental algorithm exposes a baseline path and an optimized path
+- the optimized path prioritizes lower runtime in dominant kernels
+- recovery quality is still tracked through NMSE and support metrics so speed-quality tradeoffs remain explicit
 
 More detail is documented in [docs/improved_gomp_optimization_note.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/improved_gomp_optimization_note.md).
 
 ## Key Documents
 
 - [docs/improved_gomp_optimization_note.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/improved_gomp_optimization_note.md): design and optimization notes for `Improved-gOMP`
+- [docs/runtime_memory_balancing_note.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/runtime_memory_balancing_note.md): runtime-memory balancing strategy and comparison outputs
 - [docs/experiment_protocol.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/experiment_protocol.md): experiment definitions and execution protocol
 - [docs/algorithm_boundary.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/algorithm_boundary.md): what is baseline reproduction vs. engineering extension
 - [docs/source_traceability.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/source_traceability.md): source mapping and traceability notes
@@ -119,5 +119,6 @@ Recent cleanup work separates:
 - algorithm configuration mapping in `experiments/common.py`
 - solver concerns in `utils/linalg.py`
 - selection, rescue, and refinement helpers in `algorithms/improved_gomp.py`
+- implementation-aware benchmarking outputs in `results/raw` and `results/aggregated`
 
 This keeps the experiment layer thinner and makes it easier to expose or disable individual `Improved-gOMP` modules without rewriting the runner pipeline.

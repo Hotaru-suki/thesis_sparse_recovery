@@ -25,6 +25,8 @@ The `configs/` directory stores experiment presets used by `main.py` and the swe
 - `min_group_size`: lower bound for adaptive group size
 - `use_noise_aware_stop`: enables the noise-aware stop rule
 - `use_incremental_solver`: enables incremental least-squares solving
+- `profile_level`: profiling level used by optimized implementations; `light` trims history/diagnostic memory while preserving final metrics
+- `baseline_profile_level`, `optimized_profile_level`: optional per-implementation overrides for benchmark comparisons
 - `use_forward_backward`: enables the conservative tail swap module
 - `min_residual_drop`: soft-stop threshold
 - `trials`: number of trials per sweep point

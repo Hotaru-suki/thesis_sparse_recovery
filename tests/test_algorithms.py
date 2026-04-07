@@ -22,12 +22,43 @@ class AlgorithmRecoveryTests(unittest.TestCase):
         self.assertSetEqual(set(support_hat.tolist()), set(self.support.tolist()))
         self.assertLess(np.linalg.norm(x_hat - self.x_true), 1e-8)
         self.assertEqual(info["stop_reason"], "target_sparsity_reached")
+        self.assertEqual(info["implementation"], "optimized")
+        self.assertIn("timing_breakdown_sec", info)
+
+    def test_omp_baseline_recovers_identity_support(self) -> None:
+        x_hat, support_hat, info = omp(self.Phi, self.y, k=len(self.support), implementation="baseline")
+        self.assertSetEqual(set(support_hat.tolist()), set(self.support.tolist()))
+        self.assertLess(np.linalg.norm(x_hat - self.x_true), 1e-8)
+        self.assertEqual(info["implementation"], "baseline")
+
+    def test_omp_light_profile_reports_memory_info(self) -> None:
+        x_hat, support_hat, info = omp(self.Phi, self.y, k=len(self.support), implementation="optimized", profile_level="light")
+        self.assertSetEqual(set(support_hat.tolist()), set(self.support.tolist()))
+        self.assertEqual(info["profile_level"], "light")
+        self.assertEqual(info["iterations"], len(self.support))
+        self.assertIn("peak_working_set_bytes", info)
+        self.assertGreaterEqual(info["peak_working_set_bytes"], 0)
 
     def test_gomp_recovers_identity_support(self) -> None:
         x_hat, support_hat, info = gomp(self.Phi, self.y, k=len(self.support), group_size=2)
         self.assertSetEqual(set(support_hat.tolist()), set(self.support.tolist()))
         self.assertLess(np.linalg.norm(x_hat - self.x_true), 1e-8)
         self.assertIn("max_support_condition", info)
+        self.assertEqual(info["implementation"], "optimized")
+
+    def test_gomp_baseline_recovers_identity_support(self) -> None:
+        x_hat, support_hat, info = gomp(self.Phi, self.y, k=len(self.support), group_size=2, implementation="baseline")
+        self.assertSetEqual(set(support_hat.tolist()), set(self.support.tolist()))
+        self.assertLess(np.linalg.norm(x_hat - self.x_true), 1e-8)
+        self.assertEqual(info["implementation"], "baseline")
+
+    def test_gomp_light_profile_reports_memory_info(self) -> None:
+        x_hat, support_hat, info = gomp(
+            self.Phi, self.y, k=len(self.support), group_size=2, implementation="optimized", profile_level="light"
+        )
+        self.assertSetEqual(set(support_hat.tolist()), set(self.support.tolist()))
+        self.assertEqual(info["profile_level"], "light")
+        self.assertGreaterEqual(info["peak_working_set_bytes"], 0)
 
     def test_improved_gomp_recovers_identity_support(self) -> None:
         x_hat, support_hat, info = improved_gomp(
@@ -43,6 +74,22 @@ class AlgorithmRecoveryTests(unittest.TestCase):
         self.assertLess(np.linalg.norm(x_hat - self.x_true), 1e-8)
         self.assertIn(info["stop_reason"], {"target_sparsity_reached", "residual_tol"})
         self.assertIn("solver_fallback_count", info)
+        self.assertEqual(info["implementation"], "optimized")
+
+    def test_improved_gomp_light_profile_reports_memory_info(self) -> None:
+        x_hat, support_hat, info = improved_gomp(
+            self.Phi,
+            self.y,
+            k=len(self.support),
+            group_size=2,
+            implementation="optimized",
+            profile_level="light",
+            use_incremental_solver=True,
+        )
+        self.assertSetEqual(set(support_hat.tolist()), set(self.support.tolist()))
+        self.assertEqual(info["profile_level"], "light")
+        self.assertEqual(info["iterations"], len(info["support_size_history"]))
+        self.assertGreaterEqual(info["peak_working_set_bytes"], 0)
 
     def test_incremental_solver_matches_reference_least_squares(self) -> None:
         rng = np.random.default_rng(0)
@@ -157,6 +204,21 @@ class AlgorithmRecoveryTests(unittest.TestCase):
         self.assertGreaterEqual(len(support_hat), 1)
         self.assertEqual(len(info["rescale_history"]), info["iterations"])
         self.assertIn("avg_rescale_alpha", info)
+        self.assertEqual(x_hat.shape, self.x_true.shape)
+        self.assertEqual(info["implementation"], "optimized")
+
+    def test_rmp_baseline_runs_and_reports_rescale_stats(self) -> None:
+        x_hat, support_hat, info = rmp(self.Phi, self.y, k=len(self.support), implementation="baseline")
+        self.assertGreaterEqual(len(support_hat), 1)
+        self.assertEqual(len(info["rescale_history"]), info["iterations"])
+        self.assertEqual(x_hat.shape, self.x_true.shape)
+        self.assertEqual(info["implementation"], "baseline")
+
+    def test_rmp_light_profile_reports_memory_info(self) -> None:
+        x_hat, support_hat, info = rmp(self.Phi, self.y, k=len(self.support), implementation="optimized", profile_level="light")
+        self.assertGreaterEqual(len(support_hat), 1)
+        self.assertEqual(info["profile_level"], "light")
+        self.assertGreaterEqual(info["peak_working_set_bytes"], 0)
         self.assertEqual(x_hat.shape, self.x_true.shape)
 
 

@@ -1,8 +1,35 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from time import perf_counter
 
 import numpy as np
+
+
+PHASE_NAMES = (
+    "correlation",
+    "selection",
+    "solve",
+    "residual_update",
+    "support_refinement",
+)
+
+
+def init_phase_timing() -> dict[str, float]:
+    return {phase: 0.0 for phase in PHASE_NAMES}
+
+
+@dataclass
+class PhaseTimer:
+    timings: dict[str, float]
+    phase: str
+
+    def __enter__(self) -> "PhaseTimer":
+        self._t0 = perf_counter()
+        return self
+
+    def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+        self.timings[self.phase] = self.timings.get(self.phase, 0.0) + (perf_counter() - self._t0)
 
 
 def solve_least_squares(Phi_s: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, str]:
@@ -146,3 +173,19 @@ def topk_indices(values: np.ndarray, k: int) -> np.ndarray:
     k = min(k, values.size)
     idx = np.argpartition(-values, kth=k - 1)[:k]
     return idx[np.argsort(-values[idx])]
+
+
+def compute_gram_and_rhs(Phi: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    return Phi.T @ Phi, Phi.T @ y
+
+
+def solve_from_cached_gram(
+    gram: np.ndarray,
+    phi_ty: np.ndarray,
+    support: list[int],
+    ridge: float = 1e-10,
+) -> tuple[np.ndarray, str]:
+    if not support:
+        return np.zeros(0, dtype=float), "empty_support"
+    support_idx = np.asarray(support, dtype=int)
+    return stable_solve_gram(gram[np.ix_(support_idx, support_idx)], phi_ty[support_idx], ridge=ridge)
