@@ -37,6 +37,7 @@ Run a single experiment:
 
 ```bash
 python main.py --exp snr
+python main.py --exp runtime
 ```
 
 Run the full benchmark set:
@@ -57,6 +58,13 @@ python main.py --exp snr --seed 20260408 --trials 10 --outdir .
 - aggregated summaries: `results/aggregated/`
 - run metadata: `results/logs/`
 - figures: `figures/`
+
+For the runtime experiment, the repository now also emits:
+
+- `summary_speedup_<algorithm>.csv`
+- `summary_runtime_breakdown_<algorithm>.csv`
+- `summary_memory_breakdown_<algorithm>.csv`
+- `summary_memory_speedup_<algorithm>.csv`
 
 ## Practical Notes
 

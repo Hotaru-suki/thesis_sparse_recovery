@@ -1,0 +1,5 @@
+n,baseline_peak_working_set_bytes,baseline_solver_gram_bytes,baseline_support_history_bytes,optimized_peak_working_set_bytes,optimized_solver_gram_bytes,optimized_support_history_bytes,memory_saving_ratio,peak_working_set_delta_bytes,solver_gram_delta_bytes,support_history_delta_bytes
+128,2512.0,0.0,488.0,1088.0,0.0,128.0,2.3088235294117645,-1424.0,0.0,-360.0
+256,3664.0,0.0,488.0,1216.0,0.0,128.0,3.013157894736842,-2448.0,0.0,-360.0
+384,4816.0,0.0,488.0,1344.0,0.0,128.0,3.5833333333333335,-3472.0,0.0,-360.0
+512,5968.0,0.0,488.0,1472.0,0.0,128.0,4.054347826086956,-4496.0,0.0,-360.0

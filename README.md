@@ -9,6 +9,7 @@ The project is organized as a benchmark-style codebase rather than a general-pur
 - Explicit `baseline` and `optimized` implementations for all benchmarked algorithms
 - Runtime-breakdown exports for correlation, selection, solve, residual update, and support refinement
 - Speedup summaries that compare baseline and optimized implementations per algorithm
+- Memory-breakdown and memory-speedup summaries that compare baseline and optimized implementations per algorithm
 - Sweep scripts for sparsity, SNR, runtime, compression ratio, matrix type, coefficient mode, ablation, and parameter sensitivity
 - Saved outputs under `results/raw`, `results/aggregated`, and `figures`
 - Unit tests for algorithm behavior and solver correctness
@@ -88,6 +89,7 @@ The repository is organized around a runtime-first thesis narrative:
 - each experimental algorithm exposes a baseline path and an optimized path
 - the optimized path prioritizes lower runtime in dominant kernels
 - recovery quality is still tracked through NMSE and support metrics so speed-quality tradeoffs remain explicit
+- working-memory tradeoffs are exported alongside runtime so memory savings or regressions are explicit rather than implicit
 
 More detail is documented in [docs/improved_gomp_optimization_note.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/improved_gomp_optimization_note.md).
 
