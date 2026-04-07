@@ -1,0 +1,18 @@
+m: 96
+n: 256
+k: 16
+min_m: 48
+matrix_kind: gaussian
+coeff_mode: gaussian
+group_size: 3
+screening_ratio: 3.0
+min_group_size: 1
+use_noise_aware_stop: true
+use_incremental_solver: true
+min_residual_drop: 0.0001
+snr_db: 20.0
+include_rmp: true
+measurement_ratio_list: [0.25, 0.375, 0.5, 0.625]
+trials: 20
+seed: 20260408
+outdir: .
