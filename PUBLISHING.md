@@ -9,6 +9,7 @@ For a clean public repository, keep:
 - documentation under `docs/`
 - entrypoints and repository metadata such as `README.md`, `requirements.txt`, `LICENSE`, `CONTRIBUTING.md`, and `REPRODUCIBILITY.md`
 - reproducible result artifacts under `results/raw/`, `results/aggregated/`, and `figures/`
+- thesis handoff summaries under `deepseek_ready/`
 
 ## Usually Excluded
 
@@ -17,6 +18,8 @@ For a clean public repository, keep:
 - transient cache files
 - timestamped run logs under `results/logs/`
 - prompt scratch files such as `CODEX_PROMPT*.md`
+- temporary comparison directories such as `tmp_*`
+- local thesis-generation scratch scripts unless they are intentionally documented
 
 ## Suggested Output Policy
 
@@ -36,5 +39,7 @@ If you prefer a lighter release, a reasonable minimum is:
 - check that `README.md` matches the current repository positioning
 - check that `docs/` uses public-facing wording rather than internal project framing
 - check that tracked results correspond to the latest run you want to present
+- check that `deepseek_ready/` was regenerated after the latest CSV/figure changes
 - check that no private machine paths or local scratch files remain
 - check that `git status` does not include accidental environment or cache files
+- run `python -m pytest`

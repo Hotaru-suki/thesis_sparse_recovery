@@ -1,0 +1,17 @@
+measurement_ratio,algorithm,implementation,peak_working_set_bytes,residual_bytes,x_hat_bytes,support_mask_bytes,solver_gram_bytes,solver_rhs_bytes,support_history_bytes,residual_history_bytes,support_size_history_bytes,candidate_size_history_bytes,group_size_history_bytes,support_condition_history_bytes,extra_array_bytes
+0.1875,Improved-gOMP,baseline,3138.0,384.0,2048.0,0.0,0.0,0.0,462.0,55.2,47.2,47.2,47.2,47.2,0.0
+0.1875,Improved-gOMP,optimized,4612.4,384.0,2048.0,0.0,1832.4,120.4,120.4,53.6,45.6,0.0,0.0,8.0,0.0
+0.25,Improved-gOMP,baseline,3284.4,512.0,2048.0,0.0,0.0,0.0,474.4,56.4,48.4,48.4,48.4,48.4,0.0
+0.25,Improved-gOMP,optimized,4612.8,512.0,2048.0,0.0,1715.2,116.0,116.0,52.8,44.8,0.0,0.0,8.0,0.0
+0.3125,Improved-gOMP,baseline,3400.0,640.0,2048.0,0.0,0.0,0.0,466.0,55.6,47.6,47.6,47.6,47.6,0.0
+0.3125,Improved-gOMP,optimized,4872.4,640.0,2048.0,0.0,1836.4,120.4,120.4,53.6,45.6,0.0,0.0,8.0,0.0
+0.375,Improved-gOMP,baseline,3492.8,768.0,2048.0,0.0,0.0,0.0,438.8,54.0,46.0,46.0,46.0,46.0,0.0
+0.375,Improved-gOMP,optimized,5004.0,768.0,2048.0,0.0,1839.2,120.8,120.8,53.6,45.6,0.0,0.0,8.0,0.0
+0.4375,Improved-gOMP,baseline,3615.2,896.0,2048.0,0.0,0.0,0.0,433.2,54.0,46.0,46.0,46.0,46.0,0.0
+0.4375,Improved-gOMP,optimized,5097.2,896.0,2048.0,0.0,1806.8,119.6,119.6,53.6,45.6,0.0,0.0,8.0,0.0
+0.5,Improved-gOMP,baseline,3743.6,1024.0,2048.0,0.0,0.0,0.0,433.6,54.0,46.0,46.0,46.0,46.0,0.0
+0.5,Improved-gOMP,optimized,5208.8,1024.0,2048.0,0.0,1792.8,119.2,119.2,52.8,44.8,0.0,0.0,8.0,0.0
+0.5625,Improved-gOMP,baseline,3861.2,1152.0,2048.0,0.0,0.0,0.0,425.2,53.6,45.6,45.6,45.6,45.6,0.0
+0.5625,Improved-gOMP,optimized,5353.2,1152.0,2048.0,0.0,1807.6,119.6,119.6,53.2,45.2,0.0,0.0,8.0,0.0
+0.625,Improved-gOMP,baseline,3986.8,1280.0,2048.0,0.0,0.0,0.0,422.8,53.6,45.6,45.6,45.6,45.6,0.0
+0.625,Improved-gOMP,optimized,5343.2,1280.0,2048.0,0.0,1680.8,115.2,115.2,52.0,44.0,0.0,0.0,8.0,0.0

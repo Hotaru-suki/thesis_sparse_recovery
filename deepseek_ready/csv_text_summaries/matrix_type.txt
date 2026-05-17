@@ -1,0 +1,57 @@
+文件：results/raw/matrix_type.csv
+生成依据：当前 results/raw CSV；不是旧 README 或旧审计文档。
+
+实验目的：
+比较不同测量矩阵类型对恢复性能的影响。
+
+使用说明：
+当前实验不包含 RMP。
+
+基本事实：
+- 行数：360
+- 列数：55
+- 实验变量 matrix_kind：bernoulli, gaussian, partial_dct
+- 算法/配置：Improved-gOMP, OMP, gOMP
+- implementation：baseline, optimized
+- m：96
+- n：256
+- measurement_ratio：0.375
+- matrix_kind：bernoulli, gaussian, partial_dct
+- coeff_mode：gaussian
+- snr_db：20
+
+核心指标范围：
+- exact_support_recovery: min=0, max=1, mean=0.119444
+- support_recall: min=0.5625, max=1, mean=0.883333
+- support_precision: min=0.625, max=1, mean=0.900842
+- nmse: min=0.001118, max=0.106485, mean=0.005704
+- relative_l2_error: min=0.033439, max=0.32632, mean=0.068005
+- runtime_sec: min=0.000198, max=0.003597, mean=0.000949
+- iterations: min=4, max=16, mean=9.241667
+- final_residual_norm: min=0.194024, max=0.985709, mean=0.366204
+
+论文默认 optimized 分组均值：
+matrix_kind | algorithm | implementation | exact_support_recovery | support_recall | support_precision | nmse | relative_l2_error | runtime_sec
+--- | --- | --- | --- | --- | --- | --- | --- | ---
+bernoulli | Improved-gOMP | optimized | 0 | 0.865625 | 0.927196 | 0.005518 | 0.065655 | 0.001122
+bernoulli | OMP | optimized | 0.05 | 0.896875 | 0.896875 | 0.00454 | 0.064236 | 0.000578
+bernoulli | gOMP | optimized | 0.05 | 0.86875 | 0.86875 | 0.008967 | 0.07801 | 0.000247
+gaussian | Improved-gOMP | optimized | 0.2 | 0.878125 | 0.939375 | 0.004912 | 0.064134 | 0.001181
+gaussian | OMP | optimized | 0.2 | 0.903125 | 0.903125 | 0.004582 | 0.065607 | 0.000576
+gaussian | gOMP | optimized | 0 | 0.85625 | 0.85625 | 0.008459 | 0.083672 | 0.000256
+partial_dct | Improved-gOMP | optimized | 0.2 | 0.884375 | 0.954696 | 0.003715 | 0.058791 | 0.00105
+partial_dct | OMP | optimized | 0.3 | 0.921875 | 0.921875 | 0.003732 | 0.058619 | 0.000607
+partial_dct | gOMP | optimized | 0.25 | 0.915625 | 0.915625 | 0.003641 | 0.057925 | 0.000239
+
+可以写入论文的真实结论：
+- 当前结论仅对应本 CSV 中的参数设置，不能外推到所有压缩感知场景。
+- 实验变量为 matrix_kind，取值为 bernoulli, gaussian, partial_dct。
+- 按 optimized 数据的平均 exact_support_recovery 计算，最高算法/配置为 OMP，均值为 0.183333。
+- 平均运行时间最短的是 gOMP，均值为 0.000247 秒。
+- CSV 同时包含 baseline 与 optimized；涉及加速比时必须明确比较的是实现优化，不是算法理论优势。
+
+不能写入论文的错误结论：
+- 不得声称 Improved-gOMP 在所有实验条件下都显著优于 OMP/gOMP，除非对应 CSV 的分组数据支持。
+- 不得把 exact_support_recovery 较低的结果写成稳定精确恢复。
+- 不得引用本文件不存在的参数点、SNR 点、测量比率或算法。
+- 不得把 baseline 与 optimized 混在一起计算同一条论文曲线。

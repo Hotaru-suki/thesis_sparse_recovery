@@ -1,0 +1,2 @@
+ablation_variant,algorithm,implementation,peak_working_set_bytes,residual_bytes,x_hat_bytes,support_mask_bytes,solver_gram_bytes,solver_rhs_bytes,support_history_bytes,residual_history_bytes,support_size_history_bytes,candidate_size_history_bytes,group_size_history_bytes,support_condition_history_bytes,extra_array_bytes
+full_suite,gOMP+Adaptive+NoiseAware,optimized,3014.6666666666665,768.0,2048.0,0.0,0.0,0.0,104.26666666666667,47.2,39.2,0.0,0.0,8.0,0.0

@@ -12,6 +12,7 @@ use_forward_backward: true
 min_residual_drop: 0.0001
 snr_db: 20.0
 include_rmp: true
+rescale_factor: 0.85
 n_list: [128, 256, 384, 512]
 n: 256
 trials: 20

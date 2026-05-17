@@ -1,0 +1,4 @@
+coeff_mode,baseline_peak_working_set_bytes,baseline_solver_gram_bytes,baseline_support_history_bytes,optimized_peak_working_set_bytes,optimized_solver_gram_bytes,optimized_support_history_bytes,memory_saving_ratio,peak_working_set_delta_bytes,solver_gram_delta_bytes,support_history_delta_bytes
+gaussian,3503.6,0.0,445.6,4977.6,1814.4,120.0,0.7038733526197364,1474.0000000000005,1814.4,-325.6
+rademacher,3564.0,0.0,496.0,5218.4,2048.0,128.0,0.6829679595278246,1654.3999999999996,2048.0,-368.0
+uniform,3522.0,0.0,462.0,5004.0,1841.6,120.8,0.7038369304556354,1482.0,1841.6,-341.2

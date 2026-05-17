@@ -13,5 +13,10 @@
 - [x] trial-level and aggregated outputs stored separately
 - [x] `README`, traceability notes, boundary notes, and experiment protocol included
 - [x] CLI supports `--all` and `--exp`
-- [x] `OMP`, `gOMP`, and `Improved-gOMP` tests passing
+- [x] pytest validation configured and passing
 - [x] `Improved-gOMP` design notes included
+- [x] `deepseek_ready/` text summaries generated from current CSV and figures
+- [x] main and supplementary experiment outputs documented for thesis use
+- [x] cache, temporary run directories, and legacy outputs removed from the deliverable tree
+- [x] README, reproducibility, publishing, results, and config docs aligned with current code
+- [x] parameter-sensitivity experiment validates real Improved-gOMP parameter overrides

@@ -22,7 +22,7 @@ This repository is a compact sparse-recovery experiment project. Contributions s
 Before submitting changes, run:
 
 ```bash
-python -m unittest tests.test_algorithms tests.test_config_and_main -q
+python -m pytest -q
 ```
 
 If you modify experiment output structure or plotting behavior, also run the relevant experiment or sweep and verify that generated CSV and figure names remain coherent.

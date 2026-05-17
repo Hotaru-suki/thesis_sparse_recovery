@@ -7,7 +7,7 @@ from experiments.common import _run_gomp, _run_improved, make_standard_plots, ru
 def main() -> None:
     config = load_cli_config("ablation", "Run ablation experiment")
 
-    algorithm_specs = {
+    ablation_map = {
         "gOMP": (_run_gomp, config),
         "gOMP+AdaptiveScreen": (_run_improved, {**config, "use_incremental_solver": False, "use_noise_aware_stop": False}),
         "gOMP+IncrementalSolver": (_run_improved, {**config, "screening_ratio": 1.0, "use_noise_aware_stop": False}),
@@ -17,6 +17,10 @@ def main() -> None:
         "gOMP+Incremental+NoiseAware": (_run_improved, {**config, "screening_ratio": 1.0, "use_noise_aware_stop": True}),
         "Improved-gOMP": (_run_improved, config),
     }
+    algorithm_specs = [
+        {"algorithm": name, "implementation": "optimized", "algorithm_fn": fn, "params": params}
+        for name, (fn, params) in ablation_map.items()
+    ]
 
     _, summary_df, paths = run_sweep(
         experiment_name="ablation",

@@ -1,0 +1,2 @@
+ablation_variant,algorithm,implementation,runtime_sec,correlation_time_sec,selection_time_sec,solve_time_sec,residual_update_time_sec,support_refinement_time_sec
+full_suite,gOMP+AdaptiveScreen,optimized,0.0012289557997670877,2.7391967159928753e-05,0.0006385136331421866,0.00020927099916055644,4.5546900582849045e-05,0.000175996165247246

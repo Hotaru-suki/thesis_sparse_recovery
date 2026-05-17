@@ -8,6 +8,14 @@ from utils.io_utils import ensure_output_dirs, save_results, save_run_metadata
 from utils.plotting import plot_metric
 
 
+def _sensitivity_params(config: dict, **overrides: object) -> dict:
+    params = {**config, **overrides}
+    # Parameter-sensitivity runs need diagnostic histories such as
+    # candidate_size_history; optimized sweeps default to light profiling.
+    params["optimized_profile_level"] = "full"
+    return params
+
+
 def main() -> None:
     config = load_cli_config("param_sensitivity", "Run parameter sensitivity experiment")
 
@@ -27,7 +35,19 @@ def main() -> None:
                 coeff_mode=config.get("coeff_mode", "gaussian"),
                 snr_db=config.get("snr_db"),
                 sigma=config.get("sigma"),
-                algorithm_specs={"Improved-gOMP": (_run_improved, {**config, "screening_ratio": screening_ratio})},
+                algorithm_specs=[
+                    {
+                        "algorithm": "Improved-gOMP",
+                        "implementation": "optimized",
+                        "algorithm_fn": _run_improved,
+                        "params": _sensitivity_params(
+                            config,
+                            screening_ratio=screening_ratio,
+                            improved_screening_ratio=screening_ratio,
+                            optimized_screening_ratio=screening_ratio,
+                        ),
+                    }
+                ],
             )
         )
     for group_size in config["group_size_list"]:
@@ -44,7 +64,18 @@ def main() -> None:
                 coeff_mode=config.get("coeff_mode", "gaussian"),
                 snr_db=config.get("snr_db"),
                 sigma=config.get("sigma"),
-                algorithm_specs={"Improved-gOMP": (_run_improved, {**config, "group_size": group_size})},
+                algorithm_specs=[
+                    {
+                        "algorithm": "Improved-gOMP",
+                        "implementation": "optimized",
+                        "algorithm_fn": _run_improved,
+                        "params": _sensitivity_params(
+                            config,
+                            group_size=group_size,
+                            improved_group_size=group_size,
+                        ),
+                    }
+                ],
             )
         )
 

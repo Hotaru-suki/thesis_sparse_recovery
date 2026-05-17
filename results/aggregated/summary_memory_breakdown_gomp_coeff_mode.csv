@@ -1,0 +1,7 @@
+coeff_mode,algorithm,implementation,peak_working_set_bytes,residual_bytes,x_hat_bytes,support_mask_bytes,solver_gram_bytes,solver_rhs_bytes,support_history_bytes,residual_history_bytes,support_size_history_bytes,candidate_size_history_bytes,group_size_history_bytes,support_condition_history_bytes,extra_array_bytes
+gaussian,gOMP,baseline,3664.0,768.0,2048.0,256.0,0.0,0.0,488.0,56.0,0.0,0.0,0.0,48.0,0.0
+gaussian,gOMP,optimized,1216.0,768.0,0.0,256.0,0.0,0.0,128.0,56.0,0.0,0.0,0.0,8.0,0.0
+rademacher,gOMP,baseline,3664.0,768.0,2048.0,256.0,0.0,0.0,488.0,56.0,0.0,0.0,0.0,48.0,0.0
+rademacher,gOMP,optimized,1216.0,768.0,0.0,256.0,0.0,0.0,128.0,56.0,0.0,0.0,0.0,8.0,0.0
+uniform,gOMP,baseline,3664.0,768.0,2048.0,256.0,0.0,0.0,488.0,56.0,0.0,0.0,0.0,48.0,0.0
+uniform,gOMP,optimized,1216.0,768.0,0.0,256.0,0.0,0.0,128.0,56.0,0.0,0.0,0.0,8.0,0.0

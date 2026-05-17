@@ -93,10 +93,10 @@ def build_improved_gomp_kwargs(params: dict, noise_sigma: float | None, implemen
         "use_incremental_solver": params.get("optimized_use_incremental_solver", params.get("use_incremental_solver", True)),
         "noise_sigma": noise_sigma,
         "min_residual_drop": params.get("optimized_min_residual_drop", params.get("improved_min_residual_drop", params.get("min_residual_drop", 1e-4))),
-        "use_tail_refinement": params.get("optimized_use_tail_refinement", False),
-        "use_gain_reranking": params.get("optimized_use_gain_reranking", False),
-        "use_forward_backward": params.get("optimized_use_forward_backward", False),
-        "use_two_phase_tail": params.get("optimized_use_two_phase_tail", False),
+        "use_tail_refinement": params.get("optimized_use_tail_refinement", params.get("use_tail_refinement", False)),
+        "use_gain_reranking": params.get("optimized_use_gain_reranking", params.get("use_gain_reranking", False)),
+        "use_forward_backward": params.get("optimized_use_forward_backward", params.get("use_forward_backward", False)),
+        "use_two_phase_tail": params.get("optimized_use_two_phase_tail", params.get("use_two_phase_tail", False)),
         "use_cholesky_solver": params.get("optimized_use_cholesky_solver", params.get("use_cholesky_solver", True)),
     }
 
@@ -149,6 +149,7 @@ def _run_rmp(
         tol=params.get("tol"),
         max_iter=params.get("max_iter"),
         rescale_factor=params.get("rescale_factor", 0.5),
+        rescale_mode=params.get("rescale_mode", "fixed"),
         implementation=implementation,
         profile_level=_profile_level_for(params, implementation),
     )
@@ -455,7 +456,10 @@ def run_sweep(
 
 
 def make_standard_plots(summary_df: pd.DataFrame, x_col: str, figure_specs: list[tuple[str, str, str]], figure_dir: Path) -> None:
-    plot_df = summary_df[summary_df["implementation"] == "optimized"].copy()
+    if "implementation" in summary_df.columns:
+        plot_df = summary_df[summary_df["implementation"] == "optimized"].copy()
+    else:
+        plot_df = summary_df.copy()
     for filename, metric, ylabel in figure_specs:
         plot_metric(
             plot_df,

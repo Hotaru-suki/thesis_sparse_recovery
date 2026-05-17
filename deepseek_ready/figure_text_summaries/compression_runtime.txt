@@ -1,0 +1,22 @@
+图片：figures/compression_runtime.png
+文件大小：82838 bytes
+推荐状态：主文正式候选图
+
+来源数据：results/raw/compression.csv
+横轴：measurement_ratio
+纵轴：运行时间（runtime_sec）
+算法/曲线：Improved-gOMP, OMP, RMP, gOMP
+implementation：图通常应使用 optimized；如图含 baseline/optimized，正文必须明确说明。
+关键数据范围：
+- Improved-gOMP: runtime_sec mean=0.001146, min=0.000583, max=0.002122
+- OMP: runtime_sec mean=0.000535, min=0.000442, max=0.000954
+- RMP: runtime_sec mean=0.000519, min=0.000399, max=0.001202
+- gOMP: runtime_sec mean=0.000235, min=0.000182, max=0.000521
+
+建议正文使用：
+- 只描述图中由 CSV 支持的趋势，避免使用“显著优于”“稳定恢复”等过强表述。
+- 图题应包含关键实验条件，例如 m、n、k、SNR、implementation。
+
+禁止正文：
+- 不得把补充/附录候选图混入主文编号，除非 insertion_plan 明确调整。
+- 不得引用图片中不存在的数据点或旧文档中的旧参数。

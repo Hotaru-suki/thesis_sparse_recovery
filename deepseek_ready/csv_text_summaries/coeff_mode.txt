@@ -1,0 +1,57 @@
+文件：results/raw/coeff_mode.csv
+生成依据：当前 results/raw CSV；不是旧 README 或旧审计文档。
+
+实验目的：
+比较不同稀疏系数分布对恢复性能的影响。
+
+使用说明：
+当前实验不包含 RMP。
+
+基本事实：
+- 行数：360
+- 列数：55
+- 实验变量 coeff_mode：gaussian, rademacher, uniform
+- 算法/配置：Improved-gOMP, OMP, gOMP
+- implementation：baseline, optimized
+- m：96
+- n：256
+- measurement_ratio：0.375
+- matrix_kind：gaussian
+- coeff_mode：gaussian, rademacher, uniform
+- snr_db：20
+
+核心指标范围：
+- exact_support_recovery: min=0, max=1, mean=0.130556
+- support_recall: min=0.625, max=1, mean=0.897569
+- support_precision: min=0.625, max=1, mean=0.906607
+- nmse: min=0.000568, max=0.498658, mean=0.04397
+- relative_l2_error: min=0.023842, max=0.706157, mean=0.145938
+- runtime_sec: min=0.000192, max=0.003425, mean=0.000967
+- iterations: min=4, max=16, mean=9.236111
+- final_residual_norm: min=0.160013, max=1.606889, mean=0.496303
+
+论文默认 optimized 分组均值：
+coeff_mode | algorithm | implementation | exact_support_recovery | support_recall | support_precision | nmse | relative_l2_error | runtime_sec
+--- | --- | --- | --- | --- | --- | --- | --- | ---
+gaussian | Improved-gOMP | optimized | 0.05 | 0.875 | 0.934087 | 0.004687 | 0.065245 | 0.001079
+gaussian | OMP | optimized | 0.05 | 0.903125 | 0.903125 | 0.00477 | 0.067767 | 0.000535
+gaussian | gOMP | optimized | 0 | 0.884375 | 0.884375 | 0.00513 | 0.069575 | 0.000236
+rademacher | Improved-gOMP | optimized | 0.25 | 0.915625 | 0.915625 | 0.11715 | 0.297441 | 0.001115
+rademacher | OMP | optimized | 0.55 | 0.965625 | 0.965625 | 0.048216 | 0.169207 | 0.000533
+rademacher | gOMP | optimized | 0.2 | 0.896875 | 0.896875 | 0.14401 | 0.331998 | 0.000237
+uniform | Improved-gOMP | optimized | 0.05 | 0.8875 | 0.942821 | 0.006009 | 0.075037 | 0.001148
+uniform | OMP | optimized | 0.05 | 0.91875 | 0.91875 | 0.006664 | 0.075761 | 0.000531
+uniform | gOMP | optimized | 0.05 | 0.89375 | 0.89375 | 0.007985 | 0.083807 | 0.000263
+
+可以写入论文的真实结论：
+- 当前结论仅对应本 CSV 中的参数设置，不能外推到所有压缩感知场景。
+- 实验变量为 coeff_mode，取值为 gaussian, rademacher, uniform。
+- 按 optimized 数据的平均 exact_support_recovery 计算，最高算法/配置为 OMP，均值为 0.216667。
+- 平均运行时间最短的是 gOMP，均值为 0.000245 秒。
+- CSV 同时包含 baseline 与 optimized；涉及加速比时必须明确比较的是实现优化，不是算法理论优势。
+
+不能写入论文的错误结论：
+- 不得声称 Improved-gOMP 在所有实验条件下都显著优于 OMP/gOMP，除非对应 CSV 的分组数据支持。
+- 不得把 exact_support_recovery 较低的结果写成稳定精确恢复。
+- 不得引用本文件不存在的参数点、SNR 点、测量比率或算法。
+- 不得把 baseline 与 optimized 混在一起计算同一条论文曲线。

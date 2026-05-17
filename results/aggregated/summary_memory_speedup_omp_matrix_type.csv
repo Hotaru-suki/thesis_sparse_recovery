@@ -1,0 +1,4 @@
+matrix_kind,baseline_peak_working_set_bytes,baseline_solver_gram_bytes,baseline_support_history_bytes,optimized_peak_working_set_bytes,optimized_solver_gram_bytes,optimized_support_history_bytes,memory_saving_ratio,peak_working_set_delta_bytes,solver_gram_delta_bytes,support_history_delta_bytes
+bernoulli,4168.0,0.0,1088.0,3472.0,2048.0,128.0,1.2004608294930876,-696.0,2048.0,-960.0
+gaussian,4168.0,0.0,1088.0,3472.0,2048.0,128.0,1.2004608294930876,-696.0,2048.0,-960.0
+partial_dct,4168.0,0.0,1088.0,3472.0,2048.0,128.0,1.2004608294930876,-696.0,2048.0,-960.0

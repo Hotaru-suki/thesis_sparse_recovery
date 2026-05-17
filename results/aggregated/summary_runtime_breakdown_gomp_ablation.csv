@@ -1,0 +1,2 @@
+ablation_variant,algorithm,implementation,runtime_sec,correlation_time_sec,selection_time_sec,solve_time_sec,residual_update_time_sec,support_refinement_time_sec
+full_suite,gOMP,optimized,0.0002649191997382635,2.590070192430479e-05,5.596513389415729e-05,8.880913398267391e-05,3.130339828203432e-05,0.0

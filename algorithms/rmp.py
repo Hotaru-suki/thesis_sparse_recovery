@@ -66,15 +66,19 @@ def _rescale_update(
     coef: np.ndarray,
     x_hat: np.ndarray,
     rescale_factor: float,
+    rescale_mode: str = "fixed",
 ) -> tuple[np.ndarray, np.ndarray, float, str]:
     projection = Phi[:, support] @ coef
-    denom = float(projection @ projection)
     fallback_reason = ""
-    if denom > 1e-12:
-        alpha = float((projection @ y) / denom)
-    else:
+    if rescale_mode == "fixed":
         alpha = float(rescale_factor)
-        fallback_reason = "degenerate_rescale_direction"
+    else:
+        denom = float(projection @ projection)
+        if denom > 1e-12:
+            alpha = float((projection @ y) / denom)
+        else:
+            alpha = float(rescale_factor)
+            fallback_reason = "degenerate_rescale_direction"
     alpha = max(alpha, 0.0)
     x_hat[:] = 0.0
     x_hat[np.asarray(support, dtype=int)] = alpha * coef
@@ -90,6 +94,7 @@ def _rmp_baseline(
     max_iter: int,
     rescale_factor: float,
     profile_level: str,
+    rescale_mode: str = "fixed",
 ) -> tuple[np.ndarray, np.ndarray, dict]:
     _, n = Phi.shape
     residual = y.copy()
@@ -138,6 +143,7 @@ def _rmp_baseline(
                 coef=coef,
                 x_hat=x_hat,
                 rescale_factor=rescale_factor,
+                rescale_mode=rescale_mode,
             )
             residual_norm = float(np.linalg.norm(residual))
         if rescale_fallback:
@@ -193,6 +199,7 @@ def _rmp_optimized(
     max_iter: int,
     rescale_factor: float,
     profile_level: str,
+    rescale_mode: str = "fixed",
 ) -> tuple[np.ndarray, np.ndarray, dict]:
     _, n = Phi.shape
     residual = y.copy()
@@ -243,6 +250,7 @@ def _rmp_optimized(
                 coef=coef,
                 x_hat=working_x,
                 rescale_factor=rescale_factor,
+                rescale_mode=rescale_mode,
             )
             residual_norm = float(np.linalg.norm(residual))
         if rescale_fallback:
@@ -305,6 +313,7 @@ def rmp(
     tol: float | None = None,
     max_iter: int | None = None,
     rescale_factor: float = 0.5,
+    rescale_mode: str = "fixed",
     implementation: str = "optimized",
     profile_level: str = "full",
     return_info: bool = True,
@@ -325,6 +334,7 @@ def rmp(
             max_iter=max_iter,
             rescale_factor=rescale_factor,
             profile_level=profile_level,
+            rescale_mode=rescale_mode,
         )
     elif implementation == "optimized":
         x_hat, support_hat, info = _rmp_optimized(
@@ -335,6 +345,7 @@ def rmp(
             max_iter=max_iter,
             rescale_factor=rescale_factor,
             profile_level=profile_level,
+            rescale_mode=rescale_mode,
         )
     else:
         raise ValueError("implementation must be 'baseline' or 'optimized'")

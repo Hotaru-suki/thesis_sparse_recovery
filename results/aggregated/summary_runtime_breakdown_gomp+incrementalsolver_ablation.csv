@@ -1,0 +1,2 @@
+ablation_variant,algorithm,implementation,runtime_sec,correlation_time_sec,selection_time_sec,solve_time_sec,residual_update_time_sec,support_refinement_time_sec
+full_suite,gOMP+IncrementalSolver,optimized,0.0012968383332918165,2.5331867072964086e-05,0.0006527888337586774,0.00025214150106573166,4.0966432425193486e-05,0.0001813720654657421

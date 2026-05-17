@@ -12,7 +12,8 @@ use_incremental_solver: true
 use_forward_backward: true
 min_residual_drop: 0.0001
 include_rmp: true
-snr_list: [5, 10, 15, 20, 30, "clean"]
+rescale_factor: 0.85
+snr_list: [5, 10, 15, 20, 25, 30, 40, "clean"]
 trials: 30
 seed: 20260408
 outdir: .

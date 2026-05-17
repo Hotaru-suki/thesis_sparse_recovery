@@ -1,0 +1,79 @@
+文件：results/raw/sparsity_clean.csv
+生成依据：当前 results/raw CSV；不是旧 README 或旧审计文档。
+
+实验目的：
+无噪声条件下的稀疏度补充实验。
+
+使用说明：
+该文件是补充实验输出，需结合文件内 m/n/SNR 字段确认条件。
+
+基本事实：
+- 行数：1800
+- 列数：56
+- 实验变量 k：4, 8, 12, 16, 20, 24, 28, 32, 36, 40
+- 算法/配置：Improved-gOMP, OMP, gOMP
+- implementation：baseline, optimized
+- m：96
+- n：256
+- k：4, 8, 12, 16, 20, 24, 28, 32, 36, 40
+- measurement_ratio：0.375
+- matrix_kind：gaussian
+- coeff_mode：gaussian
+- snr_db：clean
+
+核心指标范围：
+- exact_support_recovery: min=0, max=1, mean=0.356111
+- support_recall: min=0.28125, max=1, mean=0.877467
+- support_precision: min=0.28125, max=1, mean=0.881403
+- nmse: min=5.311e-32, max=1.065947, mean=0.036368
+- relative_l2_error: min=2.304e-16, max=1.032447, mean=0.089324
+- runtime_sec: min=6.736e-05, max=0.014594, mean=0.002254
+- iterations: min=2, max=40, mean=12.88
+- final_residual_norm: min=3.867e-16, max=1.14396, mean=0.164771
+
+论文默认 optimized 分组均值：
+k | algorithm | implementation | exact_support_recovery | support_recall | support_precision | nmse | relative_l2_error | runtime_sec
+--- | --- | --- | --- | --- | --- | --- | --- | ---
+12 | Improved-gOMP | optimized | 0.5 | 0.930556 | 0.930556 | 0.002792 | 0.027652 | 0.001543
+12 | OMP | optimized | 1 | 1 | 1 | 1.420e-20 | 1.179e-10 | 0.000438
+12 | gOMP | optimized | 0.2 | 0.911111 | 0.911111 | 0.001791 | 0.031695 | 0.000164
+16 | Improved-gOMP | optimized | 0.366667 | 0.927083 | 0.927083 | 0.004842 | 0.033792 | 0.002208
+16 | OMP | optimized | 0.933333 | 0.99375 | 0.99375 | 0.000199 | 0.003508 | 0.000536
+16 | gOMP | optimized | 0.366667 | 0.929167 | 0.929167 | 0.007172 | 0.034114 | 0.000215
+20 | Improved-gOMP | optimized | 0.266667 | 0.896667 | 0.896667 | 0.006673 | 0.044859 | 0.003004
+20 | OMP | optimized | 0.966667 | 0.998333 | 0.998333 | 1.156e-05 | 0.000621 | 0.000686
+20 | gOMP | optimized | 0.066667 | 0.923333 | 0.923333 | 0.001712 | 0.027091 | 0.00026
+24 | Improved-gOMP | optimized | 0.066667 | 0.894444 | 0.894444 | 0.004662 | 0.04301 | 0.00413
+24 | OMP | optimized | 0.833333 | 0.991667 | 0.991667 | 5.199e-05 | 0.002014 | 0.000858
+24 | gOMP | optimized | 0 | 0.916667 | 0.916667 | 0.001085 | 0.024351 | 0.000326
+28 | Improved-gOMP | optimized | 0.066667 | 0.877381 | 0.877381 | 0.011219 | 0.073187 | 0.005582
+28 | OMP | optimized | 0.633333 | 0.97381 | 0.97381 | 0.000648 | 0.01209 | 0.001043
+28 | gOMP | optimized | 0.066667 | 0.894048 | 0.894048 | 0.009722 | 0.06515 | 0.000398
+32 | Improved-gOMP | optimized | 0.066667 | 0.776042 | 0.776042 | 0.088229 | 0.191373 | 0.006849
+32 | OMP | optimized | 0.466667 | 0.898958 | 0.898958 | 0.045487 | 0.098419 | 0.001195
+32 | gOMP | optimized | 0 | 0.8125 | 0.8125 | 0.056915 | 0.147733 | 0.000474
+36 | Improved-gOMP | optimized | 0.033333 | 0.726852 | 0.726852 | 0.101051 | 0.235724 | 0.00851
+36 | OMP | optimized | 0.166667 | 0.797222 | 0.797222 | 0.113899 | 0.211986 | 0.001462
+36 | gOMP | optimized | 0 | 0.697222 | 0.697222 | 0.148471 | 0.294002 | 0.000523
+4 | Improved-gOMP | optimized | 0 | 0.691667 | 0.922222 | 0.043389 | 0.16387 | 0.000468
+4 | OMP | optimized | 1 | 1 | 1 | 1.109e-20 | 1.048e-10 | 0.000188
+4 | gOMP | optimized | 0.466667 | 0.85 | 0.85 | 0.009385 | 0.052632 | 8.398e-05
+40 | Improved-gOMP | optimized | 0 | 0.644167 | 0.644167 | 0.191708 | 0.354297 | 0.010411
+40 | OMP | optimized | 0.2 | 0.795 | 0.795 | 0.107509 | 0.201541 | 0.001684
+40 | gOMP | optimized | 0 | 0.69 | 0.69 | 0.153228 | 0.305469 | 0.00068
+8 | Improved-gOMP | optimized | 0.166667 | 0.841667 | 0.841667 | 0.006641 | 0.05765 | 0.000863
+8 | OMP | optimized | 1 | 1 | 1 | 1.285e-20 | 1.122e-10 | 0.000259
+8 | gOMP | optimized | 0.266667 | 0.883333 | 0.883333 | 0.004329 | 0.036298 | 0.000118
+
+可以写入论文的真实结论：
+- 当前结论仅对应本 CSV 中的参数设置，不能外推到所有压缩感知场景。
+- 实验变量为 k，取值为 4, 8, 12, 16, 20, 24, 28, 32, 36, 40。
+- 按 optimized 数据的平均 exact_support_recovery 计算，最高算法/配置为 OMP，均值为 0.72。
+- 平均运行时间最短的是 gOMP，均值为 0.000324 秒。
+- CSV 同时包含 baseline 与 optimized；涉及加速比时必须明确比较的是实现优化，不是算法理论优势。
+
+不能写入论文的错误结论：
+- 不得声称 Improved-gOMP 在所有实验条件下都显著优于 OMP/gOMP，除非对应 CSV 的分组数据支持。
+- 不得把 exact_support_recovery 较低的结果写成稳定精确恢复。
+- 不得引用本文件不存在的参数点、SNR 点、测量比率或算法。
+- 不得把 baseline 与 optimized 混在一起计算同一条论文曲线。

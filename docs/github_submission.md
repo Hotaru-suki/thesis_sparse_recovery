@@ -12,6 +12,8 @@ This repository is already organized in a form suitable for public version contr
   - `results/raw/`
   - `results/aggregated/`
   - `figures/`
+- thesis handoff material:
+  - `deepseek_ready/`
 
 ## Usually Excluded
 
@@ -19,8 +21,10 @@ This repository is already organized in a form suitable for public version contr
 - `__pycache__/`
 - `.idea/`
 - timestamped run logs under `results/logs/`
+- temporary comparison directories such as `tmp_*`
+- prompt scratch files such as `CODEX_PROMPT*.md`
 
-These exclusions are already reflected in [`.gitignore`](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/.gitignore).
+These exclusions are already reflected in [`.gitignore`](../.gitignore).
 
 ## Recommended Repository Description
 
@@ -31,7 +35,7 @@ When publishing the repository, the homepage description should make these point
 - `RMP` is included as an exploratory implementation
 - `results/` and `figures/` contain reproducible benchmark artifacts
 
-See also [PUBLISHING.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/PUBLISHING.md) for a compact public-artifact policy.
+See also [PUBLISHING.md](../PUBLISHING.md) for a compact public-artifact policy.
 
 ## Suggested Submission Flow
 
@@ -51,4 +55,5 @@ git push -u origin main
 - `configs/` all load correctly
 - `tests/` run successfully
 - `results/raw/`, `results/aggregated/`, and `figures/` contain the versions you want to publish
+- `deepseek_ready/` has been regenerated from those result files
 - no private local paths, caches, or machine-specific files are accidentally included

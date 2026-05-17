@@ -28,7 +28,7 @@ python -m pip install -r requirements.txt
 Run the unit tests:
 
 ```bash
-python -m unittest tests.test_algorithms tests.test_config_and_main -q
+python -m pytest -q
 ```
 
 ## Regenerating Results
@@ -66,8 +66,22 @@ For the runtime experiment, the repository now also emits:
 - `summary_memory_breakdown_<algorithm>.csv`
 - `summary_memory_speedup_<algorithm>.csv`
 
+For non-runtime experiments, the same breakdown families are emitted with an
+experiment suffix, such as `summary_speedup_omp_snr.csv` or
+`runtime_breakdown_improved_gomp_compression.csv`.
+
+Regenerate thesis handoff summaries after any CSV or figure change:
+
+```bash
+python deepseek_ready/generate_summaries.py
+```
+
 ## Practical Notes
 
 - The repository includes tracked result artifacts. If you regenerate outputs, expect CSV and figure diffs.
+- The `tmp_*` directories are scratch comparison runs and are ignored by git.
+- The current thesis scope is to include main and supplementary experiment
+  outputs where possible; use appendices for lower-priority figures if the main
+  text becomes too dense.
 - If you work in WSL, create a Linux virtual environment instead of reusing a Windows virtual environment directly.
 - The benchmark is seed-controlled, but floating-point behavior and linear algebra backends can still introduce small numerical differences across platforms.

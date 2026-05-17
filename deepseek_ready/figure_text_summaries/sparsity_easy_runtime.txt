@@ -1,0 +1,21 @@
+图片：figures/sparsity_easy_runtime.png
+文件大小：78294 bytes
+推荐状态：补充/附录候选图，正文空间不足时放入附录或补充分析
+
+来源数据：results/raw/sparsity_clean_easy.csv
+横轴：k
+纵轴：运行时间（runtime_sec）
+算法/曲线：Improved-gOMP, OMP, gOMP
+implementation：图通常应使用 optimized；如图含 baseline/optimized，正文必须明确说明。
+关键数据范围：
+- Improved-gOMP: runtime_sec mean=0.002118, min=0.000338, max=0.006405
+- OMP: runtime_sec mean=0.000878, min=0.000137, max=0.002581
+- gOMP: runtime_sec mean=0.00035, min=7.181e-05, max=0.00111
+
+建议正文使用：
+- 只描述图中由 CSV 支持的趋势，避免使用“显著优于”“稳定恢复”等过强表述。
+- 图题应包含关键实验条件，例如 m、n、k、SNR、implementation。
+
+禁止正文：
+- 不得把补充/附录候选图混入主文编号，除非 insertion_plan 明确调整。
+- 不得引用图片中不存在的数据点或旧文档中的旧参数。

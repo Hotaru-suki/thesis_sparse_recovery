@@ -1,0 +1,55 @@
+文件：results/raw/ablation.csv
+生成依据：当前 results/raw CSV；不是旧 README 或旧审计文档。
+
+实验目的：
+比较 Improved-gOMP 相关模块组合的消融表现。
+
+使用说明：
+消融实验只包含 optimized 实现，algorithm 列是模块组合名称。
+
+基本事实：
+- 行数：240
+- 列数：56
+- 实验变量 ablation_variant：full_suite
+- 算法/配置：Improved-gOMP, gOMP, gOMP+Adaptive+Incremental, gOMP+Adaptive+NoiseAware, gOMP+AdaptiveScreen, gOMP+Incremental+NoiseAware, gOMP+IncrementalSolver, gOMP+NoiseAwareStop
+- implementation：optimized
+- m：96
+- n：256
+- measurement_ratio：0.375
+- matrix_kind：gaussian
+- coeff_mode：gaussian
+- snr_db：15
+
+核心指标范围：
+- exact_support_recovery: min=0, max=1, mean=0.0125
+- support_recall: min=0.5625, max=1, mean=0.778385
+- support_precision: min=0.625, max=1, mean=0.865948
+- nmse: min=0.004008, max=0.068088, mean=0.023317
+- relative_l2_error: min=0.063308, max=0.260936, mean=0.148233
+- runtime_sec: min=0.00021, max=0.002851, mean=0.000918
+- iterations: min=4, max=7, mean=5.4875
+- final_residual_norm: min=0.431597, max=0.974122, mean=0.65696
+
+论文默认 optimized 分组均值：
+ablation_variant | algorithm | implementation | exact_support_recovery | support_recall | support_precision | nmse | relative_l2_error | runtime_sec
+--- | --- | --- | --- | --- | --- | --- | --- | ---
+full_suite | Improved-gOMP | optimized | 0 | 0.75625 | 0.931375 | 0.02179 | 0.142669 | 0.00085
+full_suite | gOMP | optimized | 0 | 0.789583 | 0.789583 | 0.026054 | 0.156416 | 0.000265
+full_suite | gOMP+Adaptive+Incremental | optimized | 0.033333 | 0.804167 | 0.804167 | 0.024441 | 0.152923 | 0.001182
+full_suite | gOMP+Adaptive+NoiseAware | optimized | 0 | 0.75625 | 0.931375 | 0.02179 | 0.142669 | 0.000821
+full_suite | gOMP+AdaptiveScreen | optimized | 0.033333 | 0.804167 | 0.804167 | 0.024441 | 0.152923 | 0.001229
+full_suite | gOMP+Incremental+NoiseAware | optimized | 0 | 0.75625 | 0.931375 | 0.02179 | 0.142669 | 0.000836
+full_suite | gOMP+IncrementalSolver | optimized | 0.033333 | 0.804167 | 0.804167 | 0.024441 | 0.152923 | 0.001297
+full_suite | gOMP+NoiseAwareStop | optimized | 0 | 0.75625 | 0.931375 | 0.02179 | 0.142669 | 0.000861
+
+可以写入论文的真实结论：
+- 当前结论仅对应本 CSV 中的参数设置，不能外推到所有压缩感知场景。
+- 实验变量为 ablation_variant，取值为 full_suite。
+- 按 optimized 数据的平均 exact_support_recovery 计算，最高算法/配置为 gOMP+Adaptive+Incremental，均值为 0.033333。
+- 平均运行时间最短的是 gOMP，均值为 0.000265 秒。
+
+不能写入论文的错误结论：
+- 不得声称 Improved-gOMP 在所有实验条件下都显著优于 OMP/gOMP，除非对应 CSV 的分组数据支持。
+- 不得把 exact_support_recovery 较低的结果写成稳定精确恢复。
+- 不得引用本文件不存在的参数点、SNR 点、测量比率或算法。
+- 不得把 baseline 与 optimized 混在一起计算同一条论文曲线。

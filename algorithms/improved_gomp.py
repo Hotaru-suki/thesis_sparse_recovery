@@ -692,7 +692,7 @@ def improved_gomp(
                 iteration=iteration,
             )
             if options.implementation == "optimized":
-                pool_cap = min(remaining, max(active_group_size + 2, 3 * active_group_size))
+                pool_cap = min(remaining, max(active_group_size + 4, 5 * active_group_size))
                 pool_size = min(pool_size, pool_cap)
             candidates = topk_indices(correlations, pool_size)
             raw_chosen = _select_candidates(

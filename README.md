@@ -1,35 +1,55 @@
 # Sparse Recovery Greedy Algorithms
 
-This repository contains a compact experimental framework for sparse signal recovery with greedy pursuit methods. It focuses on reproducible comparisons between `OMP`, `gOMP`, `Improved-gOMP`, and an exploratory `RMP` implementation, with explicit baseline-vs-optimized implementation benchmarking.
+This repository contains the experiment code and reproducible outputs for a
+graduation-thesis project on greedy sparse signal recovery. It compares `OMP`,
+`gOMP`, `Improved-gOMP`, and an exploratory `RMP` implementation, with explicit
+`baseline` versus `optimized` implementation benchmarking.
 
-The project is organized as a benchmark-style codebase rather than a general-purpose library. It includes algorithm implementations, experiment runners, aggregated result exports, generated figures, and supporting notes that explain design choices and experiment boundaries.
+The repository is a benchmark-style codebase, not a general-purpose Python
+library. For thesis writing, the source of truth is:
+
+1. `experiments/*.py`
+2. `configs/*.yaml`
+3. `algorithms/*.py`
+4. `results/raw/*.csv`
+5. `results/aggregated/*.csv`
+
+Older notes are background only. If a document conflicts with the current code
+or CSV files, use the code and CSV files.
 
 ## Highlights
 
-- Explicit `baseline` and `optimized` implementations for all benchmarked algorithms
-- Runtime-breakdown exports for correlation, selection, solve, residual update, and support refinement
-- Speedup summaries that compare baseline and optimized implementations per algorithm
-- Memory-breakdown and memory-speedup summaries that compare baseline and optimized implementations per algorithm
-- Sweep scripts for sparsity, SNR, runtime, compression ratio, matrix type, coefficient mode, ablation, and parameter sensitivity
-- Saved outputs under `results/raw`, `results/aggregated`, and `figures`
-- Unit tests for algorithm behavior and solver correctness
+- Greedy recovery algorithms: `OMP`, `gOMP`, `Improved-gOMP`, and optional `RMP`
+- Explicit `baseline` and `optimized` implementations for ordinary sweep runs
+- Runtime breakdown exports for correlation, selection, solve, residual update,
+  and support refinement
+- Memory breakdown and memory-speedup summaries
+- Sweep scripts for sparsity, SNR, runtime, compression ratio, matrix type,
+  coefficient mode, ablation, and parameter sensitivity
+- Trial-level outputs under `results/raw`
+- Aggregated outputs under `results/aggregated`
+- Generated figures under `figures`
+- Text summaries under `deepseek_ready` for thesis writing and model handoff
+- Unit tests for algorithm behavior, solver correctness, config loading, and
+  main dispatch
 
 ## Repository Layout
 
 ```text
 thesis_sparse_recovery/
-├─ algorithms/
-├─ configs/
-├─ docs/
-├─ experiments/
-├─ figures/
+├─ algorithms/          algorithm implementations
+├─ configs/             YAML experiment presets
+├─ deepseek_ready/      current CSV/figure text summaries and insertion plan
+├─ docs/                experiment protocol, figure index, traceability notes
+├─ experiments/         runnable experiment sweeps
+├─ figures/             generated PNG figures
 ├─ results/
-│  ├─ aggregated/
-│  ├─ logs/
-│  └─ raw/
-├─ tests/
-├─ utils/
-├─ main.py
+│  ├─ aggregated/       grouped summaries, speedups, memory summaries
+│  ├─ logs/             run metadata snapshots
+│  └─ raw/              trial-level CSV outputs
+├─ tests/               unit tests
+├─ utils/               data generation, metrics, plotting, IO, solvers
+├─ main.py              experiment dispatcher
 └─ requirements.txt
 ```
 
@@ -65,12 +85,17 @@ python -m pip install -r requirements.txt
 Run a single sweep:
 
 ```bash
+python main.py --exp sparsity
 python main.py --exp snr
+python main.py --exp runtime
 python main.py --exp compression
+python main.py --exp matrix_type
+python main.py --exp coeff_mode
 python main.py --exp ablation
+python main.py --exp param_sensitivity
 ```
 
-Run the full experiment set:
+Run the full configured set:
 
 ```bash
 python main.py --all
@@ -82,37 +107,87 @@ Optional overrides:
 python main.py --exp snr --seed 20260408 --trials 10 --outdir .
 ```
 
+## Current Experiment Outputs
+
+The current main raw CSV files have the following structure:
+
+| Experiment | Raw CSV | Rows | Sweep variable | Algorithms/configurations | Implementation |
+| --- | --- | ---: | --- | --- | --- |
+| sparsity | `results/raw/sparsity.csv` | 1800 | `k` | OMP, gOMP, Improved-gOMP | baseline, optimized |
+| snr | `results/raw/snr.csv` | 1920 | `snr_db` | OMP, gOMP, Improved-gOMP, RMP | baseline, optimized |
+| runtime | `results/raw/runtime.csv` | 640 | `n` | OMP, gOMP, Improved-gOMP, RMP | baseline, optimized |
+| compression | `results/raw/compression.csv` | 1280 | `measurement_ratio` | OMP, gOMP, Improved-gOMP, RMP | baseline, optimized |
+| matrix_type | `results/raw/matrix_type.csv` | 360 | `matrix_kind` | OMP, gOMP, Improved-gOMP | baseline, optimized |
+| coeff_mode | `results/raw/coeff_mode.csv` | 360 | `coeff_mode` | OMP, gOMP, Improved-gOMP | baseline, optimized |
+| ablation | `results/raw/ablation.csv` | 240 | `ablation_variant` | 8 module-combination variants | optimized |
+| param_sensitivity | `results/raw/param_sensitivity.csv` | 200 | `screening_ratio`, `group_size` | Improved-gOMP | optimized |
+
+Supplementary CSV files are present for clean/noise ablation and clean sparsity
+variants. The current thesis scope is to include these results where possible,
+using the main text for the central comparisons and appendix/supplementary
+analysis when space is limited.
+
+## Thesis Writing Materials
+
+Use the generated text files before writing or revising thesis content:
+
+- `deepseek_ready/verified_existing_data.md`: current experiment-data audit
+- `deepseek_ready/insertion_plan.md`: current figure/table insertion plan
+- `deepseek_ready/csv_text_summaries/*.txt`: one text summary per usable CSV
+- `deepseek_ready/figure_text_summaries/*.txt`: one text summary per PNG figure
+
+These files are generated by:
+
+```bash
+python deepseek_ready/generate_summaries.py
+```
+
+Regenerate them after rerunning experiments or changing any output CSV.
+
+## Figures
+
+Main-text and appendix/supplementary candidate figures are listed in
+`docs/experiment_figure_index.md` and `deepseek_ready/insertion_plan.md`.
+Every figure used in the thesis, including appendix figures, must have a data
+source and a text summary.
+
 ## Current Positioning
 
-The repository is organized around a runtime-first thesis narrative:
+The repository is organized around a runtime-aware thesis narrative:
 
-- each experimental algorithm exposes a baseline path and an optimized path
-- the optimized path prioritizes lower runtime in dominant kernels
-- recovery quality is still tracked through NMSE and support metrics so speed-quality tradeoffs remain explicit
-- working-memory tradeoffs are exported alongside runtime so memory savings or regressions are explicit rather than implicit
-
-More detail is documented in [docs/improved_gomp_optimization_note.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/improved_gomp_optimization_note.md).
+- recovery quality is tracked through exact support recovery, support recall,
+  support precision, NMSE, relative L2 error, residual norm, and related metrics
+- implementation speedups are reported separately from recovery quality
+- baseline-vs-optimized comparisons are engineering comparisons, not standalone
+  proof of algorithmic superiority
+- memory and runtime tradeoffs are exported explicitly
+- weak or mixed experimental results should be reported as such rather than
+  rewritten into stronger claims
 
 ## Key Documents
 
-- [docs/improved_gomp_optimization_note.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/improved_gomp_optimization_note.md): design and optimization notes for `Improved-gOMP`
-- [docs/runtime_memory_balancing_note.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/runtime_memory_balancing_note.md): runtime-memory balancing strategy and comparison outputs
-- [docs/experiment_protocol.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/experiment_protocol.md): experiment definitions and execution protocol
-- [docs/algorithm_boundary.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/algorithm_boundary.md): what is baseline reproduction vs. engineering extension
-- [docs/source_traceability.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/docs/source_traceability.md): source mapping and traceability notes
-- [configs/README.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/configs/README.md): config presets and common fields
-- [results/README.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/results/README.md): output layout and artifact naming
-- [REPRODUCIBILITY.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/REPRODUCIBILITY.md): setup, validation, and rerun steps
-- [CONTRIBUTING.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/CONTRIBUTING.md): contribution expectations and validation checklist
-- [PUBLISHING.md](/mnt/c/Users/siest/Desktop/thesis_sparse_recovery/PUBLISHING.md): public release and artifact guidance
+- [docs/experiment_protocol.md](docs/experiment_protocol.md): current experiment definitions and execution protocol
+- [docs/experiment_figure_index.md](docs/experiment_figure_index.md): current figure-to-data mapping
+- [docs/cleanup_and_optimization_review.md](docs/cleanup_and_optimization_review.md): cleanup scope and remaining optimization opportunities
+- [docs/improved_gomp_optimization_note.md](docs/improved_gomp_optimization_note.md): design and optimization notes for `Improved-gOMP`
+- [docs/runtime_memory_balancing_note.md](docs/runtime_memory_balancing_note.md): runtime-memory balancing strategy and comparison outputs
+- [docs/algorithm_boundary.md](docs/algorithm_boundary.md): what is baseline reproduction vs. engineering extension
+- [docs/source_traceability.md](docs/source_traceability.md): source mapping and traceability notes
+- [configs/README.md](configs/README.md): config presets and common fields
+- [results/README.md](results/README.md): output layout and artifact naming
+- [REPRODUCIBILITY.md](REPRODUCIBILITY.md): setup, validation, and rerun steps
+- [CONTRIBUTING.md](CONTRIBUTING.md): contribution expectations and validation checklist
+- [PUBLISHING.md](PUBLISHING.md): public release and artifact guidance
 
 ## Testing
 
 Run:
 
 ```bash
-python -m unittest tests.test_algorithms tests.test_config_and_main -q
+python -m pytest -q
 ```
+
+Current verification status: 27 pytest tests pass in the local workspace.
 
 ## Notes on Structure
 
@@ -121,6 +196,9 @@ Recent cleanup work separates:
 - algorithm configuration mapping in `experiments/common.py`
 - solver concerns in `utils/linalg.py`
 - selection, rescue, and refinement helpers in `algorithms/improved_gomp.py`
-- implementation-aware benchmarking outputs in `results/raw` and `results/aggregated`
+- implementation-aware benchmarking outputs in `results/raw` and
+  `results/aggregated`
+- thesis-handoff summaries in `deepseek_ready`
 
-This keeps the experiment layer thinner and makes it easier to expose or disable individual `Improved-gOMP` modules without rewriting the runner pipeline.
+This keeps the experiment layer thin and makes it easier to trace every thesis
+claim back to code and CSV evidence.

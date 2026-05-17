@@ -108,7 +108,14 @@ class IncrementalGramSolver:
             self.support.append(idx)
 
     def solve(self) -> tuple[np.ndarray, str]:
-        return stable_solve_gram(self.gram, self.rhs, ridge=self.ridge)
+        if self.gram.size == 0:
+            return np.zeros(0, dtype=float), "empty_support"
+        for multiplier in [1.0, 100.0, 10000.0]:
+            ridge = max(self.ridge * multiplier, self.ridge)
+            coef, solver_name = stable_solve_gram(self.gram, self.rhs, ridge=ridge)
+            if solver_name == "gram_solve":
+                return coef, solver_name
+        return stable_solve_gram(self.gram, self.rhs, ridge=1e-2)
 
 
 @dataclass
@@ -156,15 +163,19 @@ class IncrementalCholeskySolver:
     def solve(self) -> tuple[np.ndarray, str]:
         if self.gram.size == 0:
             return np.zeros(0, dtype=float), "empty_support"
-        system = self.gram.copy()
-        system.flat[:: system.shape[0] + 1] += self.ridge
-        try:
-            chol = np.linalg.cholesky(system)
-            z = np.linalg.solve(chol, self.rhs)
-            coef = np.linalg.solve(chol.T, z)
-            return coef, "cholesky_solve"
-        except np.linalg.LinAlgError:
-            return stable_solve_gram(self.gram, self.rhs, ridge=self.ridge)
+        for attempt, multiplier in enumerate([1.0, 100.0, 10000.0]):
+            ridge = max(self.ridge * multiplier, self.ridge)
+            try:
+                system = self.gram.copy()
+                system.flat[:: system.shape[0] + 1] += ridge
+                chol = np.linalg.cholesky(system)
+                z = np.linalg.solve(chol, self.rhs)
+                coef = np.linalg.solve(chol.T, z)
+                return coef, "cholesky_solve"
+            except np.linalg.LinAlgError:
+                if attempt == 2:
+                    return stable_solve_gram(self.gram, self.rhs, ridge=max(ridge, 1e-2))
+        return stable_solve_gram(self.gram, self.rhs, ridge=1e-2)
 
 
 def topk_indices(values: np.ndarray, k: int) -> np.ndarray:
