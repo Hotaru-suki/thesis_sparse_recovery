@@ -1,5 +1,5 @@
 图片：figures/matrix_type_exact_support.png
-文件大小：100276 bytes
+文件大小：122759 bytes
 推荐状态：主文正式候选图
 
 来源数据：results/raw/matrix_type.csv

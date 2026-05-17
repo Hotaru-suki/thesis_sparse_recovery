@@ -1,5 +1,5 @@
 图片：figures/compression_runtime.png
-文件大小：82838 bytes
+文件大小：92684 bytes
 推荐状态：主文正式候选图
 
 来源数据：results/raw/compression.csv

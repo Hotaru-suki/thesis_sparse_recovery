@@ -1,5 +1,5 @@
 图片：figures/snr_runtime.png
-文件大小：80212 bytes
+文件大小：93486 bytes
 推荐状态：主文正式候选图
 
 来源数据：results/raw/snr.csv

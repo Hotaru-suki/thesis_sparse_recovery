@@ -35,4 +35,4 @@
 
 - 每个数字必须追溯到 `results/raw/*.csv` 或 `results/aggregated/*.csv` 的具体列。
 - 旧 README、旧 docs、旧 `deepseek_ready` 说明若与当前 CSV 冲突，以当前代码和 CSV 为准。
-- backup/辅助图也可纳入附录或补充分析，但不得混入主文正式图编号。
+- clean/easy/m96 等补充图可纳入附录或补充分析，但不得混入主文正式图编号。

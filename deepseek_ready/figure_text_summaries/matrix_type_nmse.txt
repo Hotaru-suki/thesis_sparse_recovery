@@ -1,5 +1,5 @@
 图片：figures/matrix_type_nmse.png
-文件大小：83657 bytes
+文件大小：102297 bytes
 推荐状态：主文正式候选图
 
 来源数据：results/raw/matrix_type.csv

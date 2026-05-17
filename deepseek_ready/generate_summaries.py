@@ -132,6 +132,7 @@ EXPERIMENTS = [
 
 FIGURE_SOURCES = {
     "sparsity": "sparsity",
+    "sparsity_clean": "sparsity_clean",
     "sparsity_easy": "sparsity_clean_easy",
     "sparsity_m96": "sparsity_clean_m96",
     "snr": "snr",
@@ -482,7 +483,7 @@ def generate_verified_data() -> None:
             "",
             "- 每个数字必须追溯到 `results/raw/*.csv` 或 `results/aggregated/*.csv` 的具体列。",
             "- 旧 README、旧 docs、旧 `deepseek_ready` 说明若与当前 CSV 冲突，以当前代码和 CSV 为准。",
-            "- backup/辅助图也可纳入附录或补充分析，但不得混入主文正式图编号。",
+            "- clean/easy/m96 等补充图可纳入附录或补充分析，但不得混入主文正式图编号。",
         ]
     )
     write(BASE / "verified_existing_data.md", "\n".join(lines))
@@ -529,7 +530,7 @@ def generate_insertion_plan() -> None:
             "",
             "## 补充或附录候选图",
             "",
-            "以下图片存在于 `figures/`，建议尽可能纳入论文的补充分析或附录；如需放入正文，必须先调整主文图号和正文叙述：",
+            "以下图片存在于 `figures/`，建议纳入论文附录或正文综合讨论；如需放入正文主图，必须先调整主文图号和正文叙述：",
             "",
             *[f"- figures/{name}" for name in aux],
             "",
@@ -555,6 +556,10 @@ def generate_insertion_plan() -> None:
 def generate_all() -> None:
     OUT_CSV.mkdir(parents=True, exist_ok=True)
     OUT_FIG.mkdir(parents=True, exist_ok=True)
+    for old in OUT_CSV.glob("*.txt"):
+        old.unlink()
+    for old in OUT_FIG.glob("*.txt"):
+        old.unlink()
     for spec in EXPERIMENTS:
         summarize_csv(spec)
     for fig_path in sorted(FIG.glob("*.png")):

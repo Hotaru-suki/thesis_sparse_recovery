@@ -1,5 +1,5 @@
 图片：figures/ablation_exact_support.png
-文件大小：118511 bytes
+文件大小：156429 bytes
 推荐状态：主文正式候选图
 
 来源数据：results/raw/ablation.csv

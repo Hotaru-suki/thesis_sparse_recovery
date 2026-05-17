@@ -1,5 +1,5 @@
 图片：figures/compression_nmse.png
-文件大小：79698 bytes
+文件大小：94381 bytes
 推荐状态：主文正式候选图
 
 来源数据：results/raw/compression.csv

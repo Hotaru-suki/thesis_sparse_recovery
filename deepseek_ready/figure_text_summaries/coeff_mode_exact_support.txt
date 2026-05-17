@@ -1,5 +1,5 @@
 图片：figures/coeff_mode_exact_support.png
-文件大小：106954 bytes
+文件大小：125308 bytes
 推荐状态：主文正式候选图
 
 来源数据：results/raw/coeff_mode.csv

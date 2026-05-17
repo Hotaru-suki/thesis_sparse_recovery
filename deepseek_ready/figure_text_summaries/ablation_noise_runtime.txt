@@ -1,5 +1,5 @@
 图片：figures/ablation_noise_runtime.png
-文件大小：108249 bytes
+文件大小：147319 bytes
 推荐状态：补充/附录候选图，正文空间不足时放入附录或补充分析
 
 来源数据：results/raw/ablation_noise_snr15.csv

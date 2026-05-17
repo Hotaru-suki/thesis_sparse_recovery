@@ -1,5 +1,5 @@
 图片：figures/sparsity_m96_exact_support.png
-文件大小：109961 bytes
+文件大小：130045 bytes
 推荐状态：补充/附录候选图，正文空间不足时放入附录或补充分析
 
 来源数据：results/raw/sparsity_clean_m96.csv

@@ -37,7 +37,7 @@ analysis if they do not fit the main result narrative:
 - `figures/ablation_noise_*.png`
 - `figures/sparsity_easy_*.png`
 - `figures/sparsity_m96_*.png`
-- `figures/*_backup.png`
+- `figures/sparsity_clean_*.png`
 
 ### Can Be Removed or Archived Later
 

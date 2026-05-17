@@ -1,5 +1,5 @@
 图片：figures/sparsity_m96_runtime.png
-文件大小：90828 bytes
+文件大小：103344 bytes
 推荐状态：补充/附录候选图，正文空间不足时放入附录或补充分析
 
 来源数据：results/raw/sparsity_clean_m96.csv

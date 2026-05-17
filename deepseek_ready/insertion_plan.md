@@ -29,7 +29,7 @@
 
 ## 补充或附录候选图
 
-以下图片存在于 `figures/`，建议尽可能纳入论文的补充分析或附录；如需放入正文，必须先调整主文图号和正文叙述：
+以下图片存在于 `figures/`，建议纳入论文附录或正文综合讨论；如需放入正文主图，必须先调整主文图号和正文叙述：
 
 - figures/ablation_clean_exact_support.png
 - figures/ablation_clean_nmse.png
@@ -37,15 +37,15 @@
 - figures/ablation_noise_exact_support.png
 - figures/ablation_noise_nmse.png
 - figures/ablation_noise_runtime.png
+- figures/sparsity_clean_exact_support.png
+- figures/sparsity_clean_nmse.png
+- figures/sparsity_clean_runtime.png
 - figures/sparsity_easy_exact_support.png
 - figures/sparsity_easy_nmse.png
 - figures/sparsity_easy_runtime.png
-- figures/sparsity_exact_support_backup.png
 - figures/sparsity_m96_exact_support.png
 - figures/sparsity_m96_nmse.png
 - figures/sparsity_m96_runtime.png
-- figures/sparsity_nmse_backup.png
-- figures/sparsity_runtime_backup.png
 
 ## 表格建议
 

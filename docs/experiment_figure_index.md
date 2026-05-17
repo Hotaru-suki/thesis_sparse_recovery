@@ -44,12 +44,12 @@ the main text, update the figure numbering and insertion plan first:
 - `sparsity_easy_exact_support.png`
 - `sparsity_easy_nmse.png`
 - `sparsity_easy_runtime.png`
-- `sparsity_exact_support_backup.png`
+- `sparsity_clean_exact_support.png`
 - `sparsity_m96_exact_support.png`
 - `sparsity_m96_nmse.png`
 - `sparsity_m96_runtime.png`
-- `sparsity_nmse_backup.png`
-- `sparsity_runtime_backup.png`
+- `sparsity_clean_nmse.png`
+- `sparsity_clean_runtime.png`
 
 ## Traceability Rules
 
