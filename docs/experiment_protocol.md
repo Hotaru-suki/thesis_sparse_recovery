@@ -82,7 +82,6 @@ Default algorithm construction is in `experiments/common.py`.
 - Aggregated summaries: `results/aggregated/`
 - Run metadata snapshots: `results/logs/`
 - Generated figures: `figures/`
-- Text summaries for downstream writing: `deepseek_ready/`
 
 ## Reported Metrics
 
@@ -111,11 +110,9 @@ Memory breakdown files additionally include estimated working-set columns.
 
 ## Thesis Use Rules
 
-- Use `deepseek_ready/verified_existing_data.md` for the current audit summary.
-- Use `deepseek_ready/insertion_plan.md` for the current figure/table plan.
-- Use the matching text file under `deepseek_ready/csv_text_summaries/` before
-  writing about a CSV.
-- Use the matching text file under `deepseek_ready/figure_text_summaries/`
-  before writing about a figure.
+- Use the current CSV files in `results/raw/` and `results/aggregated/` as the
+  source of truth.
+- Use `docs/experiment_figure_index.md` to map figures back to their source
+  experiments.
 - Do not cite old parameter counts, old trial counts, or old figure sources from
   previous notes.

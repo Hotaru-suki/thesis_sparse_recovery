@@ -46,9 +46,3 @@ Regenerate all tracked outputs with:
 ```bash
 python main.py --all
 ```
-
-Regenerate text summaries for thesis handoff after changing CSV outputs:
-
-```bash
-python deepseek_ready/generate_summaries.py
-```

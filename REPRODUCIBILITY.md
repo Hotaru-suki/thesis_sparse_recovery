@@ -70,12 +70,6 @@ For non-runtime experiments, the same breakdown families are emitted with an
 experiment suffix, such as `summary_speedup_omp_snr.csv` or
 `runtime_breakdown_improved_gomp_compression.csv`.
 
-Regenerate thesis handoff summaries after any CSV or figure change:
-
-```bash
-python deepseek_ready/generate_summaries.py
-```
-
 ## Practical Notes
 
 - The repository includes tracked result artifacts. If you regenerate outputs, expect CSV and figure diffs.

@@ -1,2 +1,2 @@
 ablation_variant,algorithm,implementation,runtime_sec,correlation_time_sec,selection_time_sec,solve_time_sec,residual_update_time_sec,support_refinement_time_sec
-full_suite,gOMP+Adaptive+NoiseAware,optimized,0.0008212406663612152,1.9607067224569617e-05,0.00047481989980345437,0.00014817576678372764,3.593176637271729e-05,3.719029979644499e-05
+full_suite,gOMP+Adaptive+NoiseAware,optimized,0.0010275862233538645,2.457385688709716e-05,0.0005781866628482628,0.00018682112393435092,4.137427696453718e-05,5.9098130635296304e-05

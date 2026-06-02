@@ -33,7 +33,7 @@ with older README or thesis notes, use `experiments/*.py`, `configs/*.yaml`, and
 
 The following files exist under `figures/` and should be included where
 possible as appendix or supplementary analysis figures. If any of them move into
-the main text, update the figure numbering and insertion plan first:
+the main text, update the figure numbering and source mapping first:
 
 - `ablation_clean_exact_support.png`
 - `ablation_clean_nmse.png`
@@ -41,21 +41,24 @@ the main text, update the figure numbering and insertion plan first:
 - `ablation_noise_exact_support.png`
 - `ablation_noise_nmse.png`
 - `ablation_noise_runtime.png`
-- `sparsity_easy_exact_support.png`
-- `sparsity_easy_nmse.png`
-- `sparsity_easy_runtime.png`
 - `sparsity_clean_exact_support.png`
-- `sparsity_m96_exact_support.png`
-- `sparsity_m96_nmse.png`
-- `sparsity_m96_runtime.png`
 - `sparsity_clean_nmse.png`
 - `sparsity_clean_runtime.png`
+- `sparsity_clean_easy_exact_support.png`
+- `sparsity_clean_easy_nmse.png`
+- `sparsity_clean_easy_runtime.png`
+- `sparsity_clean_hard_exact_support.png`
+- `sparsity_clean_hard_nmse.png`
+- `sparsity_clean_hard_runtime.png`
+- `sparsity_clean_m96_exact_support.png`
+- `sparsity_clean_m96_nmse.png`
+- `sparsity_clean_m96_runtime.png`
 
 ## Traceability Rules
 
-- Every figure used in the thesis must have a matching text explanation in
-  `deepseek_ready/figure_text_summaries/`.
-- Every CSV used in the thesis must have a matching summary in
-  `deepseek_ready/csv_text_summaries/`.
+- Every figure used in the thesis must trace back to a source CSV in
+  `results/raw/` or `results/aggregated/`.
+- Every CSV cited in the thesis must match the current tracked experiment
+  outputs.
 - Do not cite old SNR point counts, old compression-ratio counts, or old runtime
   trial counts. Use the current raw CSV files.

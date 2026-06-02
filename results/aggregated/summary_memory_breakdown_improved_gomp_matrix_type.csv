@@ -1,7 +1,7 @@
 matrix_kind,algorithm,implementation,peak_working_set_bytes,residual_bytes,x_hat_bytes,support_mask_bytes,solver_gram_bytes,solver_rhs_bytes,support_history_bytes,residual_history_bytes,support_size_history_bytes,candidate_size_history_bytes,group_size_history_bytes,support_condition_history_bytes,extra_array_bytes
-bernoulli,Improved-gOMP,baseline,3497.6,768.0,2048.0,0.0,0.0,0.0,441.6,54.4,46.4,46.4,46.4,46.4,0.0
-bernoulli,Improved-gOMP,optimized,4966.0,768.0,2048.0,0.0,1804.4,119.6,119.6,53.2,45.2,0.0,0.0,8.0,0.0
-gaussian,Improved-gOMP,baseline,3512.4,768.0,2048.0,0.0,0.0,0.0,452.4,55.2,47.2,47.2,47.2,47.2,0.0
-gaussian,Improved-gOMP,optimized,4985.6,768.0,2048.0,0.0,1822.4,120.0,120.0,53.6,45.6,0.0,0.0,8.0,0.0
-partial_dct,Improved-gOMP,baseline,3468.4,768.0,2048.0,0.0,0.0,0.0,418.4,53.2,45.2,45.2,45.2,45.2,0.0
-partial_dct,Improved-gOMP,optimized,4942.0,768.0,2048.0,0.0,1782.0,118.8,118.8,53.2,45.2,0.0,0.0,8.0,0.0
+bernoulli,Improved-gOMP,baseline,3498.7466666666664,768.0,2048.0,0.0,0.0,0.0,442.48,54.45333333333333,46.45333333333333,46.45333333333333,46.45333333333333,46.45333333333333,0.0
+bernoulli,Improved-gOMP,optimized,4978.48,768.0,2048.0,0.0,1815.44,119.92,119.92,53.6,45.6,0.0,0.0,8.0,0.0
+gaussian,Improved-gOMP,baseline,3499.12,768.0,2048.0,0.0,0.0,0.0,442.85333333333335,54.45333333333333,46.45333333333333,46.45333333333333,46.45333333333333,46.45333333333333,0.0
+gaussian,Improved-gOMP,optimized,4967.093333333333,768.0,2048.0,0.0,1804.7466666666667,119.57333333333334,119.57333333333334,53.6,45.6,0.0,0.0,8.0,0.0
+partial_dct,Improved-gOMP,baseline,3477.5466666666666,768.0,2048.0,0.0,0.0,0.0,425.14666666666665,53.68,45.68,45.68,45.68,45.68,0.0
+partial_dct,Improved-gOMP,optimized,4921.04,768.0,2048.0,0.0,1762.64,118.10666666666667,118.10666666666667,53.093333333333334,45.093333333333334,0.0,0.0,8.0,0.0
